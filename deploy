@@ -1,0 +1,62 @@
+#!/usr/bin/php
+<?php
+/**
+ * Deploy
+ * 
+ * Deployment automation framework
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
+
+// Load libraries
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Deploy' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+// We keep all configuration files in etc/ folder
+$configFolder = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR;
+
+// These are the things we need to know
+if (count($argv) < 4) {
+	printHelp($configFolder);
+	die();
+}
+
+$project = $argv[1];
+$environment = $argv[2];
+$command = $argv[3];
+$params = count($argv > 4) ? \Deploy\Config::convertToPairs(array_slice($argv, 4)) : array();
+
+echo "Running command [$command] for project [$project] on environment [$environment]\n";
+
+try {
+	$config = new \Deploy\Config($configFolder . $project . '.' . \Deploy\Config::CONFIG_FILE_EXTENSION);
+	$project = new \Deploy\Project($config);
+	$project->run($environment, $command, $params);
+} catch (Exception $e) {
+	die("\n\nERROR: " . $e->getMessage() . "\n");
+}
+
+/**
+ * Print help message
+ * 
+ * @todo Print listing of available projects, environments and locations
+ * @param string $configFolder Path to folder with project configs
+ * @return void
+ */
+function printHelp($configFolder) {
+	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	
+	$projects = \Deploy\Config::getProjects($configFolder);
+	if (empty($projects)) {
+		print "You currently have no project configurations.  Create some in folder [$configFolder].";
+		return;
+	}
+
+	print "Available project configurations:\n\n";
+	$projects->rewind();
+	while($projects->valid()) {
+		$current = $projects->current();
+		print "\t" . $current->getName() . ' (' . $current->getConfigName() . ")\n";
+		$projects->next();
+	}
+}
+?>
