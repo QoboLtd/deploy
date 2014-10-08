@@ -1,5 +1,6 @@
 <?php
 namespace Deploy;
+use \Qobo\Pattern\Pattern;
 /**
  * Command class
  * 
@@ -14,10 +15,10 @@ class Command {
 	 * Constructor
 	 * 
 	 * @param string $type Type of the command, e.g.: install, update, etc
-	 * @param string $command Command line pattern with place holders
+	 * @param Pattern $command Command line pattern with place holders
 	 * @return object
 	 */
-	public function __construct($type, $command) {
+	public function __construct($type, Pattern $command) {
 		$this->type = $type;
 		$this->command = $command;
 	}
@@ -34,33 +35,12 @@ class Command {
 	/**
 	 * Get command line
 	 * 
-	 * @return string
+	 * @return Pattern
 	 */
 	public function getCommand() {
 		return $this->command;
 	}
 	
-	/**
-	 * Populate pattern with values
-	 * 
-	 * @param string $pattern Pattern to parse
-	 * @param array $params Key-values to use in pattern
-	 * @return string
-	 */
-	public static function parsePattern($pattern, array $params = array()) {
-		$result = $pattern;
-		
-		if (empty($params)) {
-			return $result;
-		}
-
-		foreach ($params as $key => $value) {
-			$key = '%%' . $key . '%%';
-			$result = str_replace($key, $value, $result);
-		}
-
-		return $result;
-	}
 	/**
 	 * Run command
 	 * 
@@ -68,7 +48,7 @@ class Command {
 	 * @return void
 	 */
 	public function run(array $params = array()) {
-		$command = $this->parsePattern($this->command, $params);
+		$command = $this->command->parse($params);
 		print "Executing: $command ... ";
 		$out = array('');
 		$result = exec($command, $out, $status);

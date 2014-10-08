@@ -1,5 +1,5 @@
 {
 	"require": {
-		"qobo/pattern": "v1.0.0"
+		"qobo/pattern": "1.0.*"
 	}
 }

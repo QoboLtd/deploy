@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d97eef32ef01d64afe031570fd07d4c8",
+    "hash": "41d5ab6ad8a1cd9b41275f320c6a5210",
     "packages": [
         {
             "name": "qobo/pattern",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/QoboLtd/PHP-Pattern.git",
-                "reference": "e7ad72bb2d12fd908417866a4361026ef0051a52"
+                "reference": "bf227bd8029c0dcccf812e5750a48eb4b0c88a4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/e7ad72bb2d12fd908417866a4361026ef0051a52",
-                "reference": "e7ad72bb2d12fd908417866a4361026ef0051a52",
+                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/bf227bd8029c0dcccf812e5750a48eb4b0c88a4b",
+                "reference": "bf227bd8029c0dcccf812e5750a48eb4b0c88a4b",
                 "shasum": ""
             },
             "require": {
@@ -27,6 +27,11 @@
                 "phpunit/phpunit": "4.3.*"
             },
             "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Qobo\\Pattern\\": "src/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0"
@@ -45,7 +50,7 @@
                 "strings",
                 "templating"
             ],
-            "time": "2014-10-08 19:26:30"
+            "time": "2014-10-08 21:10:44"
         }
     ],
     "packages-dev": [],
