@@ -70,7 +70,7 @@ class Location {
 	private function getCommand() {
 		switch ($this->type) {
 			case self::LOCATION_TYPE_SSH:
-				$result = 'ssh %%host%% "cd %%dir%% && %%command%%"';
+				$result = 'ssh %%host%% "if [ ! -d \"%%dir%%\" ] ; then mkdir -p \"%%dir%%\" ; fi && cd %%dir%% && %%command%%"';
 				break;
 			default:
 				$result = '%%command%%';
