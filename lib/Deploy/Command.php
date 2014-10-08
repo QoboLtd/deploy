@@ -69,7 +69,16 @@ class Command {
 	 */
 	public function run(array $params = array()) {
 		$command = $this->parsePattern($this->command, $params);
-		print "Executing: $command\n";
+		print "Executing: $command ... ";
+		$result = exec($command, null, $status);
+		if ($status > 0) {
+			print "FAIL\n";
+			print $result . "\n";
+		}
+		else {
+			print "OK\n";
+			print $result . "\n";
+		}
 	}
 
 }
