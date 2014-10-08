@@ -26,8 +26,7 @@ black magic for now).
 $ git clone deploy.repo.git
 ```
 
-Create an INI configuration file for each of your projects.  Here is an example file from
-```etc/some.domain.com.ini```:
+Create an INI configuration file for each of your projects.  Here is an example file from ```etc/some.domain.com.ini```:
 
 ```
 [main]
