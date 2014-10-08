@@ -1,5 +1,7 @@
 <?php
 namespace Deploy;
+use Qobo\Pattern\Pattern;
+
 /**
  * Environment class
  * 
@@ -87,7 +89,7 @@ class Environment {
 		$configSection = $this->config->getSection('commands');
 		if (!empty($configSection)) {
 			foreach ($configSection as $commandType => $commandPattern) {
-				$this->commands[$commandType] = new Command($commandType, $commandPattern);
+				$this->commands[$commandType] = new Command($commandType, new Pattern($commandPattern));
 			}
 		}
 		
@@ -100,7 +102,7 @@ class Environment {
 				continue;
 			}
 			list($type, $command) = explode(':', $command);
-			$this->commands[$type] = new Command($type, $command);
+			$this->commands[$type] = new Command($type, new Pattern($command));
 		}
 	}
 	

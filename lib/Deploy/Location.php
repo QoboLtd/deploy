@@ -1,5 +1,6 @@
 <?php
 namespace Deploy;
+use Qobo\Pattern\Pattern;
 /**
  * Location class
  * 
@@ -63,23 +64,6 @@ class Location {
 	}
 
 	/**
-	 * Get location command based on type
-	 * 
-	 * @return string
-	 */
-	private function getCommand() {
-		switch ($this->type) {
-			case self::LOCATION_TYPE_SSH:
-				$result = 'ssh %%host%% "if [ ! -d \"%%dir%%\" ] ; then mkdir -p \"%%dir%%\" ; fi && cd %%dir%% && %%command%%"';
-				break;
-			default:
-				$result = '%%command%%';
-		}
-
-		return $result;
-	}
-
-	/**
 	 * Run location command
 	 * 
 	 * This is a wrapper with some trickery.  Take note.
@@ -91,10 +75,10 @@ class Location {
 	public function run(Command $command, array $params = array()) {
 
 		// Wrap Environment command into the Location command first
-		$newCommandString = $this->getCommand();
-		$newCommandString = Command::parsePattern($newCommandString, ['command' => $command->getCommand()]);
+		$newCommandString = \Deploy\Command\Factory::get($this->type);
+		$newCommandPattern = new Pattern($newCommandString, ['command' => $command->getCommand()]);
 		
-		$newCommand = new Command($command->getType(), $newCommandString);
+		$newCommand = new Command($command->getType(), $newCommandPattern);
 
 		// Merge previous parameters from command line, project, environment and current location
 		$params = array_merge($params, $this->params);
