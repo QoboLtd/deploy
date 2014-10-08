@@ -20,5 +20,19 @@ class CommandTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('bar', $result);
 	}
 
+	public function test_run__normal() {
+		$command = new Command('ok', new Pattern('ls'));
+		$command->run();
+		$result = $command->getLastStatus();
+		$this->assertEquals(Command::STATUS_SUCCESS, $result);
+	}
+	/**
+	 * @expectedException \RuntimeException
+	 */
+	public function test_run__failure() {
+		$command = new Command('fail', new Pattern(date('Y-m-d')));
+		$command->run();
+	}
+
 }
 ?>
