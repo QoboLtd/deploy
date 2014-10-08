@@ -92,6 +92,9 @@ class Environment {
 		}
 		
 		// Now override them with Environment commands
+		if (empty($this->params['commands'])) {
+			return;
+		}
 		foreach ($this->params['commands'] as $command) {
 			if (!preg_match('/:/', $command)) {
 				continue;
