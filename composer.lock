@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "qobo/pattern",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/QoboLtd/PHP-Pattern.git",
-                "reference": "bf227bd8029c0dcccf812e5750a48eb4b0c88a4b"
+                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/bf227bd8029c0dcccf812e5750a48eb4b0c88a4b",
-                "reference": "bf227bd8029c0dcccf812e5750a48eb4b0c88a4b",
+                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/c77172ac8b3e3d7657759da01ce22a29a10b0c14",
+                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
                 "strings",
                 "templating"
             ],
-            "time": "2014-10-08 21:10:44"
+            "time": "2014-10-09 03:33:47"
         }
     ],
     "packages-dev": [],
