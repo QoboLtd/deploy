@@ -16,7 +16,7 @@ class Factory {
 
 		$className = __NAMESPACE__ . '\\' . $type;
 		if (!class_exists($className)) {
-			throw new \RuntimeException("Config type [$type] is not supported");
+			throw new \InvalidArgumentException("Config type [$type] is not supported");
 		}
 
 		return new $className($file);

@@ -112,7 +112,7 @@ class JSON implements iConfig {
 		foreach ($fieldRules as $field => $rule) {
 			$value = $this->getValue($field, $data);
 			if (!preg_match($rule, $value)) {
-				throw new InvalidArgumentException("Field [$field] failed validation for rule [$rule]");
+				throw new \InvalidArgumentException("Field [$field] failed validation for rule [$rule]");
 			}
 		}
 	}
