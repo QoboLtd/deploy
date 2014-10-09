@@ -23,13 +23,10 @@ class Project {
 	/**
 	 * Get project name
 	 * 
-	 * If project-name is configured in the main section, return
-	 * that.  Otherwise, the name of the configuration itself.
-	 * 
 	 * @return string
 	 */
 	public function getName() {
-		$resul = $this->config->getValue('project.name');
+		$result = $this->config->getValue('project.name');
 
 		return $result;
 	}
@@ -68,13 +65,24 @@ class Project {
 	 * @param string $name Name of environment to check for
 	 * @return boolean True if has, false otherwise
 	 */
-	private function hasEnvironment($name) {
+	public function hasEnvironment($name) {
 		$result = false;
 
 		$environment = $this->config->getValue('project.environments.' . $name);
 		if (!empty($environment)) {
 			$result = true;
 		}
+
+		return $result;
+	}
+	
+	/**
+	 * Get available environments
+	 * 
+	 * @return array
+	 */
+	public function getEnvironments() {
+		$result = $this->config->getValue('project.environments');
 
 		return $result;
 	}
