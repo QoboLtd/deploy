@@ -54,12 +54,12 @@ class Project {
 	 * @param array $params Optional parameters for command
 	 * @return void
 	 */
-	public function run($environmentName, $commandType, array $params = array()) {
+	public function run($environmentName, $commandType) {
 		if (!$this->hasEnvironment($environmentName)) {
 			throw new \InvalidArgumentException("This project has no configuration for environment [$environmentName]");
 		}
 		$environment = new Environment($this->config, $environmentName);
-		$environment->run($commandType, $params);
+		$environment->run($commandType);
 	}
 
 	/**

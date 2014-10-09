@@ -1,5 +1,6 @@
 <?php
 namespace Deploy;
+use Deploy\Config\iConfig;
 use Qobo\Pattern\Pattern;
 /**
  * Location class
@@ -33,16 +34,26 @@ class Location {
 	 * @param array $params Parameters for the command to run
 	 * @return void
 	 */
-	public function run(Command $command, array $params = array()) {
+	public function run(Command $command, iConfig $config  = null) {
 
 		// Wrap Environment command into the Location command first
 		$newCommandString = \Deploy\Command\Factory::get($this->type);
 		$newCommandString = (string) new Pattern($newCommandString, ['command' => $command->getCommand()]);
 		
+		$newCommandPattern = new Pattern($newCommandString);
+		
+		$params = array();
+		$paramKeys = $newCommandPattern->getPlaceholders();
+		if (!empty($paramKeys)) {
+			foreach ($paramKeys as $paramKey) {
+				// Thsi will replace all placeholders, empty or not
+				$params[$paramKey] = isset($this->params->{$paramKey}) ? $this->params->{$paramKey} : $config->getValue($paramKey);
+			}
+		}
+		
 		$newCommand = new Command($command->getType(), new Pattern($newCommandString));
 
 		// Merge previous parameters from command line, project, environment and current location
-		$params = array_merge($params, (array) $this->params);
 		$newCommand->run($params);
 	}
 

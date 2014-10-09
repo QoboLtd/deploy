@@ -107,14 +107,14 @@ class Environment {
 	 * @param array $params Parameters for command
 	 * @return void
 	 */
-	public function run($commandType, array $params = array()) {
+	public function run($commandType) {
 		if (empty($this->commands) || !isset($this->commands[$commandType])) {
 			throw new \InvalidArgumentException("Command [$commandType] is not configured for this environment");
 		}
 		$command = $this->commands[$commandType];
 
 		foreach($this->locations as $location) {
-			$location->run($command, $params);
+			$location->run($command, $this->config);
 		}
 	}
 }

@@ -11,7 +11,7 @@
 		},
 
 		"commands": {
-			"install": "git clone %%source.url%% . && git checkout %%source.version%%",
+			"install": "git %%foobar%% clone %%source.url%% . && git checkout %%source.version%%",
 			"update": "git pull && git checkout %%source.version%%",
 			"remove": "rm -rf ."
 		},

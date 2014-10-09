@@ -27,6 +27,44 @@ class JSON implements iConfig {
 		return $this->file->getFilename();
 	}
 
+	/**
+	 * 
+	 * @todo This should probably be a different Config handler
+	 */
+	public function addUserParams(array $params = array()) {
+		if (empty($params)) {
+			return;
+		}
+
+		$pairs = $this->convertToPairs($params);
+		$this->data->{'user'} = (object) $pairs;
+	}
+	
+	/**
+	 * Convert parameters to pairs
+	 * 
+	 * This is a convenience method that helps to convert
+	 * command line arguments given in a form of key=value into an
+	 * associative array of parameters
+	 * 
+	 * @param array $params List of parameters
+	 * @return array
+	 */
+	public static function convertToPairs(array $params = array()) {
+		$result = array();
+
+		if (empty($params)) {
+			return $result;
+		}
+
+		foreach ($params as $item) {
+			list($key, $value) = explode('=', $item, 2);
+			$result[$key] = $value;
+		}
+
+		return $result;
+	}
+
 	private function isValidFile(\SplFileInfo $file) {
 		$result = false;
 
@@ -79,10 +117,14 @@ class JSON implements iConfig {
 		}
 	}
 
-	public function getValue($property, \stdClass $data = null) {
+	public function getValue($property, \stdClass $data = null, $firstCall = true) {
 
 		if (empty($data)) {
 			$data = $this->data;
+		}
+
+		if ($firstCall && isset($data->{'user'}->{$property})) {
+			return $data->{'user'}->{$property};
 		}
 		
 		$currentProperty = $property;
@@ -101,7 +143,7 @@ class JSON implements iConfig {
 		}
 
 		if (is_object($data->{$currentProperty})) {
-			return $this->getValue($newProperty, $data->{$currentProperty});
+			return $this->getValue($newProperty, $data->{$currentProperty}, false);
 		}
 
 		return $data->{$currentProperty};

@@ -24,14 +24,15 @@ if (count($argv) < 4) {
 $project = $argv[1];
 $environment = $argv[2];
 $command = $argv[3];
-$params = count($argv > 4) ? \Deploy\Config::convertToPairs(array_slice($argv, 4)) : array();
+$params = count($argv > 4) ? array_slice($argv, 4) : array();
 
 echo "Running command [$command] for project [$project] on environment [$environment]\n";
 
 try {
 	$config = \Deploy\Config\Factory::init(new splFileInfo($project));
+	$config->addUserParams($params);
 	$project = new \Deploy\Project($config);
-	$project->run($environment, $command, $params);
+	$project->run($environment, $command);
 } catch (Exception $e) {
 	die("\n\nERROR: " . $e->getMessage() . "\n");
 }
