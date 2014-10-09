@@ -1,0 +1,7 @@
+{
+	"version": "1",
+	"project": {
+		"name": "Maformed JSON project",
+		"description": "JSON parsing is so strict that even a comma after last field will cause it to fail",
+	},
+}

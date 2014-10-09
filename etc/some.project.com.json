@@ -1,0 +1,44 @@
+{
+	"version": "1",
+	"project": {
+		"name": "Some Project",
+		"url": "http://some.project.com",
+
+		"source": {
+			"type": "git",
+			"url": "git@company.server:projects/some.project.com.git",
+			"version": "master"
+		},
+
+		"commands": {
+			"install": "git %%foobar%% clone %%source.url%% . && git checkout %%source.version%%",
+			"update": "git pull && git checkout %%source.version%%",
+			"remove": "rm -rf ."
+		},
+
+		"environments": {
+			"live": {
+				"url": "http://www.project.com",
+
+				"source": {
+					"version": "stable"
+				},
+
+				"commands": {
+					"remove": ""
+				},
+
+				"locations": [
+					{
+						"type": "ssh",
+						"params": {
+							"user": "some-user",
+							"host": "some-web-host1",
+							"dir": "/va/www/vhosts/some.project.com"
+						}
+					}
+				]
+			}
+		}
+	}
+}

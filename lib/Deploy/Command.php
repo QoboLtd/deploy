@@ -1,23 +1,30 @@
 <?php
 namespace Deploy;
+use \Qobo\Pattern\Pattern;
 /**
  * Command class
  * 
  * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
  */
 class Command {
+
+	const STATUS_SUCCESS = 0;
  
 	private $type;
 	private $command;
+
+	private $lastCommand;
+	private $lastStatus;
+	private $lastOutput;
 	
 	/**
 	 * Constructor
 	 * 
 	 * @param string $type Type of the command, e.g.: install, update, etc
-	 * @param string $command Command line pattern with place holders
+	 * @param Pattern $command Command line pattern with place holders
 	 * @return object
 	 */
-	public function __construct($type, $command) {
+	public function __construct($type, Pattern $command) {
 		$this->type = $type;
 		$this->command = $command;
 	}
@@ -34,51 +41,55 @@ class Command {
 	/**
 	 * Get command line
 	 * 
-	 * @return string
+	 * @return Pattern
 	 */
 	public function getCommand() {
 		return $this->command;
 	}
-	
+
 	/**
-	 * Populate pattern with values
+	 * Get a fully formatted command line for previous run
 	 * 
-	 * @param string $pattern Pattern to parse
-	 * @param array $params Key-values to use in pattern
 	 * @return string
 	 */
-	public static function parsePattern($pattern, array $params = array()) {
-		$result = $pattern;
-		
-		if (empty($params)) {
-			return $result;
-		}
-
-		foreach ($params as $key => $value) {
-			$key = '%%' . $key . '%%';
-			$result = str_replace($key, $value, $result);
-		}
-
-		return $result;
+	public function getLastCommand() {
+		return $this->lastCommand;
 	}
+	
+	/**
+	 * Get status from the last run
+	 * 
+	 * @return integer
+	 */
+	public function getLastStatus() {
+		return $this->lastStatus;
+	}
+
+	/**
+	 * Get output from the last run
+	 * 
+	 * @return array
+	 */
+	public function getLastOutput() {
+		return $this->lastOutput;
+	}
+
 	/**
 	 * Run command
 	 * 
+	 * @throws RuntimeException
 	 * @param array $params Associative array of key-values to replace placedholders
 	 * @return void
 	 */
 	public function run(array $params = array()) {
-		$command = $this->parsePattern($this->command, $params);
-		print "Executing: $command ... ";
-		$out = array('');
-		$result = exec($command, $out, $status);
-		if ($status > 0) {
-			print "FAIL\n";
-			print $result . "\n";
-		}
-		else {
-			print "OK\n";
-			print $result . "\n";
+		$this->lastCommand = $this->command->parse($params);
+	   	$this->lastCommand .= ' 2>/dev/null'; // supress stderr output
+		
+		$this->lastOutput = array(''); // reset output
+		
+		$lastLine = exec($this->lastCommand, $this->lastOutput, $this->lastStatus);
+		if ($this->lastStatus <> self::STATUS_SUCCESS) {
+			throw new \RuntimeException("Non-zero exist status [$this->lastStatus] when executing command [$this->lastCommand]");
 		}
 	}
 
