@@ -1,6 +1,10 @@
 <?php
 namespace Deploy\Config;
-
+/**
+ * Config class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 abstract class Config implements iConfig {
 
 	/**
@@ -13,13 +17,21 @@ abstract class Config implements iConfig {
 	 */
 	protected $data;
 	
+	/**
+	 * Get configuration name
+	 * 
+	 * @return string
+	 */
 	public function getName() {
 		return $this->file->getFilename();
 	}
 	
 	/**
+	 * Add runtime user parameters to configuration
 	 * 
 	 * @todo This should probably be a different Config handler
+	 * @param array $params List of parameters to add
+	 * @return void
 	 */
 	public function addUserParams(array $params = array()) {
 		if (empty($params)) {

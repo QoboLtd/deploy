@@ -1,8 +1,19 @@
 <?php
 namespace Deploy\Config;
-
+/**
+ * Factory class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 class Factory {
 
+	/**
+	 * Initialize configuration from given file object
+	 * 
+	 * @throws \InvalidArgumentException
+	 * @param \SplFileInfo $file File object to use
+	 * @return \iConfig
+	 */
 	public static function init(\SplFileInfo $file) {
 		// Minimal check
 		if (!$file->getRealPath() || !$file->getExtension()) {
