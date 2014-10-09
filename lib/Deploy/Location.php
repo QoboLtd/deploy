@@ -46,8 +46,15 @@ class Location {
 		$paramKeys = $newCommandPattern->getPlaceholders();
 		if (!empty($paramKeys)) {
 			foreach ($paramKeys as $paramKey) {
-				// Thsi will replace all placeholders, empty or not
-				$params[$paramKey] = isset($this->params->{$paramKey}) ? $this->params->{$paramKey} : $config->getValue($paramKey);
+				if (isset($this->params->{$paramKey})) {
+					$params[$paramKey] = $this->params->{$paramKey};
+				}
+				else {
+					$configValue = $config->getValue($paramKey);
+					if ($configValue) {
+						$params[$paramKey] = $configValue;
+					}
+				}
 			}
 		}
 		
