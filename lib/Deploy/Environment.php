@@ -1,5 +1,6 @@
 <?php
 namespace Deploy;
+use Deploy\Config\iConfig;
 use Qobo\Pattern\Pattern;
 
 /**
@@ -8,8 +9,6 @@ use Qobo\Pattern\Pattern;
  * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
  */
 class Environment {
-
-	const CONFIG_PREFIX_ENVIRONMENT = 'environment-';
 
 	private $name;
 	private $config;
@@ -26,7 +25,7 @@ class Environment {
 	 * @param Config $config Project configuration object
 	 * @return object
 	 */
-	public function __construct($name, Config $config) {
+	public function __construct(iConfig $config, $name) {
 
 		$this->name = $name;
 		$this->config = $config;
@@ -44,8 +43,8 @@ class Environment {
 	 * @return void
 	 */
 	public function loadParams($name) {
-		$configSection = $this->config->getSection(self::CONFIG_PREFIX_ENVIRONMENT . $name);
-		if (empty($configSection) || !is_array($configSection)) {
+		$configSection = $this->config->getValue('project.environments.' . $name);
+		if (empty($configSection)) {
 			throw new \InvalidArgumentException("Environment [$name] is not configured for this project");
 		}
 		$this->params = $configSection;
@@ -58,16 +57,14 @@ class Environment {
 	 * @return void
 	 */
 	private function loadLocations() {
-		if (empty($this->params['locations'])) {
+
+		$configSection = $this->config->getValue('project.environments.' . $this->name . '.locations');
+		if (empty($configSection)) {
 			throw new \InvalidArgumentException("No locations configured for this environment");
 		}
-		if (!is_array($this->params['locations'])) {
-			$this->params['locations'] = array($this->params['locations']);
-		}
-
-		$this->locations = new \SplObjectStorage();
-		foreach ($this->params['locations'] as $location) {
-			$this->locations->attach(new Location($location));
+		$this->locations = array();
+		foreach ($configSection as $location) {
+			$this->locations[] = new Location($location->{'type'}, $location->{'params'});
 		}
 	}
 
@@ -81,12 +78,10 @@ class Environment {
 	 */
 	private function loadCommands() {
 		
-		if (empty($this->commands)) {
-			$this->commands = array();
-		}
+		$this->commands = array();
 		
 		// First load default commands
-		$configSection = $this->config->getSection('commands');
+		$configSection = $this->config->getValue('project.commands');
 		if (!empty($configSection)) {
 			foreach ($configSection as $commandType => $commandPattern) {
 				$this->commands[$commandType] = new Command($commandType, new Pattern($commandPattern));
@@ -94,15 +89,11 @@ class Environment {
 		}
 		
 		// Now override them with Environment commands
-		if (empty($this->params['commands'])) {
-			return;
-		}
-		foreach ($this->params['commands'] as $command) {
-			if (!preg_match('/:/', $command)) {
-				continue;
+		$configSection = $this->config->getValue('project.environments.' . $this->name . '.commands');
+		if (!empty($configSection)) {
+			foreach ($configSection as $commandType => $commandPattern) {
+				$this->commands[$commandType] = new Command($commandType, new Pattern($commandPattern));
 			}
-			list($type, $command) = explode(':', $command);
-			$this->commands[$type] = new Command($type, new Pattern($command));
 		}
 	}
 	
@@ -122,11 +113,8 @@ class Environment {
 		}
 		$command = $this->commands[$commandType];
 
-		$this->locations->rewind();
-		while($this->locations->valid()) {
-			$location = $this->locations->current();
+		foreach($this->locations as $location) {
 			$location->run($command, $params);
-			$this->locations->next();
 		}
 	}
 }

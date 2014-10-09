@@ -29,7 +29,7 @@ $params = count($argv > 4) ? \Deploy\Config::convertToPairs(array_slice($argv, 4
 echo "Running command [$command] for project [$project] on environment [$environment]\n";
 
 try {
-	$config = new \Deploy\Config($configFolder . $project . '.' . \Deploy\Config::CONFIG_FILE_EXTENSION);
+	$config = \Deploy\Config\Factory::init(new splFileInfo($project));
 	$project = new \Deploy\Project($config);
 	$project->run($environment, $command, $params);
 } catch (Exception $e) {

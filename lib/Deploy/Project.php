@@ -1,5 +1,6 @@
 <?php
 namespace Deploy;
+use Deploy\Config\iConfig;
 /**
  * Project class
  * 
@@ -15,7 +16,7 @@ class Project {
 	 * @param Config $config Project configuration object
 	 * @return object
 	 */
-	public function __construct(Config $config) {
+	public function __construct(iConfig $config) {
 		$this->config = $config;
 	}
 
@@ -28,12 +29,7 @@ class Project {
 	 * @return string
 	 */
 	public function getName() {
-		$result = $this->getConfigName();
-
-		$projectName = $this->config->getProperty('project-name');
-		if (!empty($projectName)) {
-			$result = $projectName;
-		}
+		$resul = $this->config->getValue('project.name');
 
 		return $result;
 	}
@@ -59,8 +55,28 @@ class Project {
 	 * @return void
 	 */
 	public function run($environmentName, $commandType, array $params = array()) {
-		$environment = new Environment($environmentName, $this->config);
+		if (!$this->hasEnvironment($environmentName)) {
+			throw new \InvalidArgumentException("This project has no configuration for environment [$environmentName]");
+		}
+		$environment = new Environment($this->config, $environmentName);
 		$environment->run($commandType, $params);
+	}
+
+	/**
+	 * Check if current project has given environment
+	 * 
+	 * @param string $name Name of environment to check for
+	 * @return boolean True if has, false otherwise
+	 */
+	private function hasEnvironment($name) {
+		$result = false;
+
+		$environment = $this->config->getValue('project.environments.' . $name);
+		if (!empty($environment)) {
+			$result = true;
+		}
+
+		return $result;
 	}
 
 }

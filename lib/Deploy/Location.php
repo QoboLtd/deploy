@@ -19,48 +19,9 @@ class Location {
 	 * @param string $location Location string in a form type:params
 	 * @return object
 	 */
-	public function __construct($location) {
-		$this->loadLocation($location);
-	}
-
-	/**
-	 * Load location parameters from string
-	 * 
-	 * @param string $location Location string
-	 * @return void
-	 */
-	private function loadLocation($location) {
-		if (!preg_match('/:/', $location)) {
-			throw new \InvalidArgumentException("Invalid location definition: [$location]");
-		}
-		$locationParts = explode(':', $location);
-		$type = $locationParts[0];
-		$params = array_slice($locationParts, 1);
-		
+	public function __construct($type, $params) {
 		$this->type = $type;
-		$this->params = $this->parseParams($type, $params);
-	}
-
-	/**
-	 * Parse location parameters based on location type
-	 * 
-	 * @param string $type Location type, like ssh or ftp
-	 * @param array $params Location parameters
-	 * @return array
-	 */
-	private function parseParams($type, array $params) {
-		$result = array();
-		
-		switch ($type) {
-			case self::LOCATION_TYPE_SSH:
-				$result['host'] = $params[0];
-				$result['dir'] = $params[1];
-				break;
-			default:
-				throw \InvalidArgumentException("Location type [$type] is not supported");
-		}
-
-		return $result;
+		$this->params = $params;
 	}
 
 	/**
@@ -76,12 +37,12 @@ class Location {
 
 		// Wrap Environment command into the Location command first
 		$newCommandString = \Deploy\Command\Factory::get($this->type);
-		$newCommandPattern = new Pattern($newCommandString, ['command' => $command->getCommand()]);
+		$newCommandString = (string) new Pattern($newCommandString, ['command' => $command->getCommand()]);
 		
-		$newCommand = new Command($command->getType(), $newCommandPattern);
+		$newCommand = new Command($command->getType(), new Pattern($newCommandString));
 
 		// Merge previous parameters from command line, project, environment and current location
-		$params = array_merge($params, $this->params);
+		$params = array_merge($params, (array) $this->params);
 		$newCommand->run($params);
 	}
 

@@ -11,14 +11,13 @@
 		},
 
 		"commands": {
-			"install": "git clone %%project.source.url%% . && git checkout %%project.source.version%%",
-			"update": "git pull && git checkout %%project.source.version%%",
+			"install": "git clone %%source.url%% . && git checkout %%source.version%%",
+			"update": "git pull && git checkout %%source.version%%",
 			"remove": "rm -rf ."
 		},
 
-		"environments": [
-			{
-				"name": "live",
+		"environments": {
+			"live": {
 				"url": "http://www.project.com",
 
 				"source": {
@@ -31,16 +30,15 @@
 
 				"locations": [
 					{
-						"name": "web1",
 						"type": "ssh",
 						"params": {
 							"user": "some-user",
 							"host": "some-web-host1",
 							"dir": "/va/www/vhosts/some.project.com"
 						}
-					},
+					}
 				]
-			},
-		]
+			}
+		}
 	}
 }
