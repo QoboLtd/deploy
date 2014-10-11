@@ -7,7 +7,9 @@
  * 
  * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
  */
-
+namespace Deploy;
+use \Deploy\Config\Factory;
+use \Deploy\Runnable\Project;
 // Load libraries
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Deploy' . DIRECTORY_SEPARATOR . 'autoload.php';
@@ -18,7 +20,7 @@ $configFolder = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPA
 array_shift($argv);
 // These are the things we need to know
 if (count($argv) <> 3) {
-	printHelp($configFolder);
+	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
 	die();
 }
 
@@ -28,38 +30,13 @@ $target['environment'] = array($argv[1]);
 $target['command'] = array($argv[2]);
 
 try {
-	$config = \Deploy\Config\Factory::init(new splFileInfo($target['project'][0]));
+	$config = Factory::init(new \splFileInfo($target['project'][0]));
 	$config = $config->data;
 	$config['_target'] = $target;
 
-	$project = new \Deploy\Runnable\Project($config);
+	$project = new Project($config);
 	$project->run();
 } catch (Exception $e) {
 	die("\n\nERROR: " . $e->getMessage() . "\n");
-}
-
-/**
- * Print help message
- * 
- * @todo Print listing of available projects, environments and locations
- * @param string $configFolder Path to folder with project configs
- * @return void
- */
-function printHelp($configFolder) {
-	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
-	
-	$projects = \Deploy\Config::getProjects($configFolder);
-	if (empty($projects)) {
-		print "You currently have no project configurations.  Create some in folder [$configFolder].";
-		return;
-	}
-
-	print "Available project configurations:\n\n";
-	$projects->rewind();
-	while($projects->valid()) {
-		$current = $projects->current();
-		print "\t" . $current->getName() . ' (' . $current->getConfigName() . ")\n";
-		$projects->next();
-	}
 }
 ?>
