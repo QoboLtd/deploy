@@ -1,44 +1,49 @@
 {
-	"version": "1",
-	"project": {
+		"type": "project",
 		"name": "Some Project",
+
 		"url": "http://some.project.com",
 
-		"source": {
-			"type": "git",
-			"url": "git@company.server:projects/some.project.com.git",
-			"version": "master"
-		},
-
 		"commands": {
-			"install": "git %%foobar%% clone %%source.url%% . && git checkout %%source.version%%",
-			"update": "git pull && git checkout %%source.version%%",
-			"remove": "rm -rf ."
+			"install": { 
+				"type": "command", 
+				"command": "git %%foobar%% clone %%source.url%% . && git checkout %%source.version%%" 
+			},
+			"update":  { 
+				"type": "command", 
+				"command": "git pull && git checkout %%source.version%%" 
+			},
+			"remove":  { 
+				"type": "command", 
+				"command": "rm -rf ." 
+			}
 		},
 
 		"environments": {
 			"live": {
+				"type": "environment",
+
 				"url": "http://www.project.com",
 
-				"source": {
-					"version": "stable"
-				},
-
 				"commands": {
-					"remove": ""
+					"remove": { 
+						"type": "command", 
+						"command": "" 
+					}
 				},
 
-				"locations": [
-					{
-						"type": "ssh",
+				"locations": {
+					"localhost": {
+						"type": "location",
+
+						"protocol": "ssh",
 						"params": {
 							"user": "some-user",
 							"host": "some-web-host1",
 							"dir": "/va/www/vhosts/some.project.com"
 						}
 					}
-				]
+				}
 			}
 		}
-	}
 }

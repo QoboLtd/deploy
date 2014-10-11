@@ -15,24 +15,25 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARAT
 // We keep all configuration files in etc/ folder
 $configFolder = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR;
 
+array_shift($argv);
 // These are the things we need to know
-if (count($argv) < 4) {
+if (count($argv) <> 3) {
 	printHelp($configFolder);
 	die();
 }
 
-$project = $argv[1];
-$environment = $argv[2];
-$command = $argv[3];
-$params = count($argv > 4) ? array_slice($argv, 4) : array();
-
-echo "Running command [$command] for project [$project] on environment [$environment]\n";
+$target = array();
+$target['project'] = array($argv[0]);
+$target['environment'] = array($argv[1]);
+$target['command'] = array($argv[2]);
 
 try {
-	$config = \Deploy\Config\Factory::init(new splFileInfo($project));
-	$config->addUserParams($params);
-	$project = new \Deploy\Project($config);
-	$project->run($environment, $command);
+	$config = \Deploy\Config\Factory::init(new splFileInfo($target['project'][0]));
+	$config = $config->data;
+	$config['_target'] = $target;
+
+	$project = new \Deploy\Runnable\Project($config);
+	$project->run();
 } catch (Exception $e) {
 	die("\n\nERROR: " . $e->getMessage() . "\n");
 }

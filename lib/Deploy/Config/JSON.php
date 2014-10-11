@@ -8,11 +8,6 @@ namespace Deploy\Config;
 class JSON extends Config {
 
 	/**
-	 * File format version
-	 */
-	const VERSION = 1;
-
-	/**
 	 * Constructor
 	 * 
 	 * @throws \InvalidArgumentException
@@ -26,55 +21,9 @@ class JSON extends Config {
 		
 		$this->file = $file;
 		
-		$data = $this->parseFile($this->file);
-		if (!$this->isValidData($data)) {
-			throw new \InvalidArgumentException("Config file data in [" . $file->getRealPath() . "] failed validation");
-		}
-
-		$this->data = $data;
+		$this->data = $this->parseFile($this->file);
 	}
 	
-	/**
-	 * Get configuration value
-	 * 
-	 * @param string $property Configuration property
-	 * @param \stdClass $data (Optional) Configuration data
-	 * @param boolean $firstCall Flag for recursion control
-	 * @return mixed
-	 */
-	public function getValue($property, \stdClass $data = null, $firstCall = true) {
-
-		if (empty($data)) {
-			$data = $this->data;
-		}
-
-		if ($firstCall && isset($data->{'user'}->{$property})) {
-			return $data->{'user'}->{$property};
-		}
-		
-		$currentProperty = $property;
-		$newProperty = null;
-		
-		if (preg_match('#\.#', $property)) {
-			list($currentProperty, $newProperty) = explode('.', $property, 2);
-		}
-		
-		if (!isset($data->{$currentProperty})) {
-			return null;
-		}
-
-		if (empty($newProperty)) {
-			return $data->{$currentProperty};
-		}
-
-		if (is_object($data->{$currentProperty})) {
-			return $this->getValue($newProperty, $data->{$currentProperty}, false);
-		}
-
-		return $data->{$currentProperty};
-	}
-
-
 	/**
 	 * Check if the given file is valid
 	 * 
@@ -109,49 +58,11 @@ class JSON extends Config {
 	 * @return \stdClass
 	 */
 	private function parseFile(\SplFileInfo $file) {
-		$result = json_decode(file_get_contents($file->getRealPath()));
+		$result = json_decode(file_get_contents($file->getRealPath()), true);
 		if (empty($result)) {
 			throw new \InvalidArgumentException("Failed to parse file [" . $file->getRealPath() . "]");
 		}
 		return $result;
-	}
-
-	/**
-	 * Check if parsed data is a valid configuration
-	 * 
-	 * @param \stdClass $data Configuration data to check
-	 * @return boolean
-	 */
-	private function isValidData(\stdClass $data) {
-		$result = false;
-
-		$this->validateFields($data);
-		
-		$result = true;
-
-		return $result;
-	}
-
-	/**
-	 * Validate fields in given configuration
-	 * 
-	 * @throws \InvalidArgumentException
-	 * @param \stdClass $data Data to validate
-	 * @return void
-	 */
-	private function validateFields(\stdClass $data) {
-
-		$fieldRules = array(
-				'version' => '/' . self::VERSION . '/',
-				'project.name' => '/\w+/',
-			);
-
-		foreach ($fieldRules as $field => $rule) {
-			$value = $this->getValue($field, $data);
-			if (!preg_match($rule, $value)) {
-				throw new \InvalidArgumentException("Field [$field] failed validation for rule [$rule]");
-			}
-		}
 	}
 
 }
