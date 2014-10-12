@@ -75,8 +75,33 @@ function printHelp($projectName) {
 	catch (\Exception $e) {
 		die("\n\nERROR: " . $e->getMessage() . "\n");
 	}
-	print "Here is the list of possible options for $projectName:\n";
-	$project->listChildren();
+	print "Here is the list of possible options for $projectName:\n\n";
+	$children = $project->listChildren();
+	printOptions($children);
 	
+}
+
+/**
+ * Recursively print available options
+ * 
+ * @param array $options Options to print
+ * @param integer $depth Indentation depth
+ * @return void
+ */
+function printOptions($options, $depth = 0) {
+	foreach ($options as $name => $children) {
+		if ($depth > 0) {
+			list($type, $name) = explode(':', $name, 2);
+			print str_repeat("\t", $depth) . '- ' . "$type $name\n";
+		}
+		$depth++;
+		
+		if (empty($children)) {
+			continue;
+		}
+		foreach ($children as $child) {
+			printOptions($child, $depth);
+		}
+	}
 }
 ?>

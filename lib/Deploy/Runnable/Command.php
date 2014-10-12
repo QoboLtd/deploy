@@ -18,11 +18,16 @@ class Command extends Runnable {
 		print $this->config['name'] . ': ' . $this->config['command'] . "\n";
 	}
 
-	public function listChildren($indent = 0) {
+	public function listChildren() {
+		$result = array();
+		
 		if (empty($this->config['command'])) {
-			return;
+			return $result;
 		}
-		parent::listChildren($indent);
+		
+		$result = parent::listChildren();
+
+		return $result;
 	}
 }
 ?>

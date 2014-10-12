@@ -97,21 +97,26 @@ abstract class Runnable implements iRunnable {
 		}
 	}
 
-	public function listChildren($indent = 0) {
-		if ($indent > 0) {
-			print str_repeat("\t", $indent) . "- " . $this->config['type'] . ' ' . $this->config['name'] . "\n";
-		}
-		$indent++;
+	public function listChildren() {
+		$result = array();
+		
+		$label = $this->config['type'] . ':' . $this->config['name'];
+		$result[$label] = array();
 		
 		$children = $this->getChildren();
 		if (empty($children)) {
-			return;
+			return $result;
 		}
 
 		foreach ($children as $name => $config) {
 			$config['name'] = $name;
 			$child = new $this->childrenClass($config, $this->config);
-			$child->listChildren($indent);
+			$childResult = $child->listChildren();
+			if (!empty($childResult)) {
+				$result[$label][] = $childResult;
+			}
 		}
+
+		return $result;
 	}
 }
