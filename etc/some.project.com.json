@@ -2,28 +2,40 @@
 		"type": "project",
 		"name": "Some Project",
 
-		"url": "http://some.project.com",
+		"params": {
+			"base.dir": "/var/www/html/vhosts",
+			"project.dir": "test.qobo.biz",
+
+			"source.url": "git@github.com:QoboLtd/deploy.git",
+			"source.version": "master",
+
+			"source.install": "cd %%base.dir%% && git clone %%source.url%% %%project.dir%%",
+			"source.update":  "cd %%base.dir%% && cd %%project.dir%% && git pull && %%source.checkout%%",
+			"source.checkout": "git checkout %%source.version%%",
+
+			"ssh.host": "localhost",
+			"ssh.user": "root",
+			"ssh.command": "ssh %%ssh.user%%@%%ssh.host%%"
+		},
 
 		"commands": {
 			"install": { 
 				"type": "command", 
-				"command": "git %%foobar%% clone %%source.url%% . && git checkout %%source.version%%" 
+				"command": "%%ssh.command%% '%%source.install%% && cd %%project.dir%% && %%source.checkout%%'" 
 			},
 			"update":  { 
 				"type": "command", 
-				"command": "git pull && git checkout %%source.version%%" 
+				"command": "%%ssh.command%% '%%source.update%% && cd %%project.dir%% && %%source.version%%'" 
 			},
 			"remove":  { 
 				"type": "command", 
-				"command": "rm -rf ." 
+				"command": "%%ssh.command%% 'cd %%base.dir%% && rm -rf %%project.%%dir%%'" 
 			}
 		},
 
 		"environments": {
 			"live": {
 				"type": "environment",
-
-				"url": "http://www.project.com",
 
 				"commands": {
 					"remove": { 
@@ -33,14 +45,21 @@
 				},
 
 				"locations": {
-					"localhost": {
+					"web1": {
 						"type": "location",
 
-						"protocol": "ssh",
 						"params": {
-							"user": "some-user",
-							"host": "some-web-host1",
-							"dir": "/va/www/vhosts/some.project.com"
+							"ssh.host": "some-web-host1",
+							"base.dir": "/var/www/html"
+						}
+					},
+					"web2": {
+						"type": "location",
+
+						"params": {
+							"source.version": "stable",
+							"ssh.host": "some-web-host2",
+							"base.dir": "/usr/share/www"
 						}
 					}
 				}

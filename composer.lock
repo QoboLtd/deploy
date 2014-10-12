@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6dfad5acf2e32862584d8ab90be640d9",
+    "hash": "8f4d82992d34933ba8301d83907caaeb",
     "packages": [
         {
             "name": "qobo/pattern",
-            "version": "v1.0.2",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/QoboLtd/PHP-Pattern.git",
-                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14"
+                "reference": "57668c86f0caf3e66447f7341c5ee060181aa5b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/c77172ac8b3e3d7657759da01ce22a29a10b0c14",
-                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14",
+                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/57668c86f0caf3e66447f7341c5ee060181aa5b3",
+                "reference": "57668c86f0caf3e66447f7341c5ee060181aa5b3",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +50,7 @@
                 "strings",
                 "templating"
             ],
-            "time": "2014-10-09 03:33:47"
+            "time": "2014-10-12 11:38:58"
         }
     ],
     "packages-dev": [
@@ -801,7 +801,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
-    "prefer-stable": false,
     "platform": [],
     "platform-dev": []
 }

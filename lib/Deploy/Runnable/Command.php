@@ -1,5 +1,6 @@
 <?php
 namespace Deploy\Runnable;
+use Qobo\Pattern\Pattern;
 
 class Command extends Runnable {
 
@@ -8,20 +9,39 @@ class Command extends Runnable {
 	
 	protected $targetCheck = true;
 
+	protected function render() {
+		$result = '';
+
+		if (empty($this->config['command'])) {
+			return $result;
+		}
+		$params = array();
+		if (!empty($this->config['params'])) {
+			$params = $this->config['params'];
+		}
+		$pattern = new Pattern($this->config['command'], $this->config['params']);
+		$result = $pattern->parse();
+		
+		return $result;
+	}
+
 	public function run() {
 		if (!$this->isInTarget()) {
 			return;
 		}
-		if (empty($this->config['command'])) {
+
+		$command = $this->render();
+		if (empty($command)) {
 			return;
 		}
-		print $this->config['name'] . ': ' . $this->config['command'] . "\n";
+		print "Executing: $command\n";
 	}
 
 	public function listChildren() {
 		$result = array();
 		
-		if (empty($this->config['command'])) {
+		$command = $this->render();
+		if (empty($command)) {
 			return $result;
 		}
 		
