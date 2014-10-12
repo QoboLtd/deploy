@@ -15,14 +15,14 @@ class App {
 	}
 
 	public function run() {
-		if (empty($this->argv['subCommands'])) {
-			throw new \InvalidArgumentException("No commands given");
+		if (empty($this->argv['tasks'])) {
+			throw new \InvalidArgumentException("No tasks given");
 		}
 		
-		foreach ($this->argv['subCommands'] as $command => $options) {
-			$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($command) . 'Task';
+		foreach ($this->argv['tasks'] as $taskName => $options) {
+			$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($taskName) . 'Task';
 			if (!class_exists($className)) {
-				throw new \InvalidArgumentException("Subcommand $command is not supported");
+				throw new \InvalidArgumentException("Task $taskName is not supported");
 			}
 			$task = new $className($options->toArray());
 			$task->run();
@@ -33,19 +33,19 @@ class App {
 		$result = '';
 		
 		$printer = new ConsoleOptionPrinter;
-		list($appspecs, $subcommand_specs) = self::getOptionsSpec();
+		list($app, $tasks) = self::getOptionsSpec();
 		
 		$result .= "\n\n";
-		$result .= "USAGE: deploy [OPTIONS] COMMAND [COMMAND-OPTIONS]\n";
+		$result .= "USAGE: deploy [OPTIONS] TASK [TASK-OPTIONS]\n";
 	
 		$result .= "\n";
 		$result .= "Main [OPTIONS] are:\n";
 	
-		$result .= $printer->render($appspecs);
+		$result .= $printer->render($app);
 
-		$result .= "\nCommand options are:\n";
-		foreach ($subcommand_specs as $subcommand => $details) {
-			$result .=  "\n$subcommand - " . $details['description'] . "\n";
+		$result .= "\nTask options are:\n";
+		foreach ($tasks as $task => $details) {
+			$result .=  "\n$task - " . $details['description'] . "\n";
 			$result .=  $printer->render($details['specs']);
 		}
 
@@ -56,9 +56,9 @@ class App {
 		$result = array();
 		
 		$app = self::getOptionsAppSpec();
-		$subcommands = self::getOptionsSubcommandsSpec();
+		$tasks = self::getOptionsTasksSpec();
 		
-		$result = array($app, $subcommands);
+		$result = array($app, $tasks);
 		
 		return $result;
 	}
@@ -69,48 +69,46 @@ class App {
 		return $result;
 	}
 
-	protected static function getOptionsSubcommandsSpec() {
+	protected static function getOptionsTasksSpec() {
 		$result = array();
 		
 		// deploy run
-		$run_cmdspecs = new OptionCollection;
-		$run_cmdspecs->add('t|test', 'test run only.')
+		$run = new OptionCollection;
+		$run->add('t|test', 'test run only.')
 			->isa('Boolean');
-		$run_cmdspecs->add('p|project:', 'project to deploy.')
+		$run->add('p|project:', 'project to deploy.')
 			->isa('String')
 			//->validValues(array('Factory', 'getList'))
 			->required();
-		$run_cmdspecs->add('e|env:', 'environment to deploy.')
+		$run->add('e|env:', 'environment to deploy.')
 			->isa('String')
 			->required();
-		$run_cmdspecs->add('c|command:', 'command to run.')
+		$run->add('c|command:', 'command to run.')
 			->isa('String')
 			->required();
 
 		// deploy list
-		$list_cmdspecs = new OptionCollection;
-		//$list_cmdspecs->add('v');
+		$list = new OptionCollection;
 
 		// deploy show
-		$show_cmdspecs = new OptionCollection;
-		$show_cmdspecs->add('p|project:', 'project to show')
+		$show = new OptionCollection;
+		$show->add('p|project:', 'project to show')
 			->isa('String')
 			//->validValues(array('Factory', 'getList'))
 			->required();
 
-
 		$result = array(
 			'run' => array(
 				'description' => 'Run a deployment command', 
-				'specs' => $run_cmdspecs
+				'specs' => $run,
 			),
 			'list' => array(
 				'description' => 'List available projects', 
-				'specs' => $list_cmdspecs
+				'specs' => $list,
 			),
 			'show' => array(
 				'description' => 'Show project targets', 
-				'specs' => $show_cmdspecs
+				'specs' => $show,
 			),
 		);
 
@@ -120,29 +118,29 @@ class App {
 	private function parseOptions() {
 		$result = array();
 
-		list($app, $subcommands) = $this->getOptionsSpec();
+		list($app, $tasks) = $this->getOptionsSpec();
 		
-		$subcommand_specs = array();
-		foreach ($subcommands as $command => $options) {
-			$subcommand_specs[$command] = $options['specs'];
+		$tasks_specs = array();
+		foreach ($tasks as $task => $options) {
+			$tasks_specs[$task] = $options['specs'];
 		}
-		$subcommands = array_keys($subcommand_specs);
+		$tasks = array_keys($tasks_specs);
 
 		$parser = new ContinuousOptionParser( $app );
 		
 		$result['app'] = $parser->parse( $this->argv );
-		$result['subCommands'] = array();
+		$result['tasks'] = array();
 		
 		$arguments = array();
 		while( ! $parser->isEnd() ) {
-			$subCommandIndex = array_search($parser->getCurrentArgument(), $subcommands);
+			$taskIndex = array_search($parser->getCurrentArgument(), $tasks);
 			
-			if( $subCommandIndex !== false ) {
+			if( $taskIndex !== false ) {
 				$parser->advance();
-				$subcommand = $subcommands[$subCommandIndex]; 
-				unset($subcommands[$subCommandIndex]);
-				$parser->setSpecs( $subcommand_specs[$subcommand] );
-				$result['subCommands'][ $subcommand ] = $parser->continueParse();
+				$task = $tasks[$taskIndex]; 
+				unset($tasks[$taskIndex]);
+				$parser->setSpecs( $tasks_specs[$task] );
+				$result['tasks'][ $task ] = $parser->continueParse();
 			} else {
 				$arguments[] = $parser->advance();
 			}
