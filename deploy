@@ -32,7 +32,7 @@ $target['environment'] = array($argv[1]);
 $target['command'] = array($argv[2]);
 
 try {
-	$config = Factory::init(new \splFileInfo($projectName));
+	$config = Factory::init($projectName);
 	$config = $config->data;
 	$config[Project::TARGET_KEY] = $target;
 
@@ -42,18 +42,41 @@ try {
 	die("\n\nERROR: " . $e->getMessage() . "\n");
 }
 
+/**
+ * Print help
+ * 
+ * If the valid project configuration name is given,
+ * then we only list the options for that project.  If no
+ * name is given, then we list all projects.  Otherwise,
+ * we show an error
+ * 
+ * @param string $projectName
+ * @return void
+ */
 function printHelp($projectName) {
-	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	print "\nUsage: deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	
 	if (empty($projectName)) {
+		$projects = Factory::getList();
+		print "Available projects:\n\n";
+		foreach ($projects as $project) {
+			print "\t- " . $project . "\n";
+		}
 		return;
 	}
 	
-	print "Here is the list of possible options:\n";
-	
-	$config = Factory::init(new \splFileInfo($projectName));
-	$config = $config->data;
+	try {
+		$config = Factory::init($projectName);
+		$config = $config->data;
 
-	$project = new Project($config);
+		$project = new Project($config);
+
+	}
+	catch (\Exception $e) {
+		die("\n\nERROR: " . $e->getMessage() . "\n");
+	}
+	print "Here is the list of possible options for $projectName:\n";
 	$project->listChildren();
+	
 }
 ?>

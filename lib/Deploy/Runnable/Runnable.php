@@ -98,7 +98,10 @@ abstract class Runnable implements iRunnable {
 	}
 
 	public function listChildren($indent = 0) {
-		print str_repeat("\t", $indent++) . $this->config['type'] . ' ' . $this->config['name'] . "\n";
+		if ($indent > 0) {
+			print str_repeat("\t", $indent) . "- " . $this->config['type'] . ' ' . $this->config['name'] . "\n";
+		}
+		$indent++;
 		
 		$children = $this->getChildren();
 		if (empty($children)) {
