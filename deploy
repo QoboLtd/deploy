@@ -8,13 +8,26 @@
  * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
  */
 namespace Deploy;
+
 use \Deploy\Config\Factory;
 use \Deploy\Runnable\Project;
+
+use \GetOptionKit\OptionCollection;
+use \GetOptionKit\ContinuousOptionParser;
+
 // Load libraries
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Deploy' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-array_shift($argv);
+
+try {
+	$options = parseOptions($argv);
+}
+catch (\Exception $e) {
+	print "ERROR: " . $e->getMessage();
+	die();
+}
+print_r($options); 
 
 $projectName = null;
 if (count($argv) >= 1) {
@@ -25,6 +38,8 @@ if (count($argv) <> 3) {
 	printHelp($projectName);
 	die();
 }
+print_r($options);
+die();
 
 $target = array();
 $target['project'] = array($projectName);
@@ -54,7 +69,20 @@ try {
  * @return void
  */
 function printHelp($projectName) {
-	print "\nUsage: deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	print "\n\nUSAGE: deploy [OPTIONS] COMMAND [COMMAND-OPTIONS]\n";
+	
+	$printer = new \GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
+	
+	list($appspecs, $subcommand_specs) = getOptionsSpec();
+	print "\nMain [OPTIONS] are:\n";
+	
+	print $printer->render($appspecs);
+
+	print "\nCommand options are:\n";
+	foreach ($subcommand_specs as $subcommand => $details) {
+		print "\n$subcommand - " . $details['description'] . "\n";
+		print $printer->render($details['specs']);
+	}
 	
 	if (empty($projectName)) {
 		$projects = Factory::getList();
@@ -103,5 +131,80 @@ function printOptions($options, $depth = 0) {
 			printOptions($child, $depth);
 		}
 	}
+}
+
+function getOptionsSpec() {
+	$result = array();
+	
+	$app = new OptionCollection;
+	$app->add('v|verbose', 'verbose output.');
+
+	$run_cmdspecs = new OptionCollection;
+	$run_cmdspecs->add('t|test', 'test run only.')
+		->isa('Boolean');
+	$run_cmdspecs->add('p|project:', 'project to deploy.')
+		->isa('String')
+		//->validValues(array('Factory', 'getList'))
+		->required();
+	$run_cmdspecs->add('e|env:', 'environment to deploy.')
+		->isa('String')
+		->required();
+	$run_cmdspecs->add('c|command:', 'command to run.')
+		->isa('String')
+		->required();
+
+	$list_cmdspecs = new OptionCollection;
+	//$list_cmdspecs->add('v');
+
+	$show_cmdspecs = new OptionCollection;
+	$show_cmdspecs->add('p|project:', 'project to show')
+		->isa('String')
+		//->validValues(array('Factory', 'getList'))
+		->required();
+
+
+	$subcommand_specs = array(
+		'run' => array('description' => 'Run a deployment command', 'specs' => $run_cmdspecs),
+		'list' => array('description' => 'List available projects', 'specs' => $list_cmdspecs),
+		'show' => array('description' => 'Show project targets', 'specs' => $show_cmdspecs),
+	);
+
+	$result = array($app, $subcommand_specs);
+	
+	return $result;
+}
+
+function parseOptions($argv) {
+	$result = array();
+
+	list($app, $subcommands) = getOptionsSpec();
+	
+	$subcommand_specs = array();
+	foreach ($subcommands as $command => $options) {
+		$subcommand_specs[$command] = $options['specs'];
+	}
+	$subcommands = array_keys($subcommand_specs);
+
+	$parser = new ContinuousOptionParser( $app );
+	
+	$result['app'] = $parser->parse( $argv );
+	$result['subCommands'] = array();
+	
+	$arguments = array();
+	while( ! $parser->isEnd() ) {
+		$subCommandIndex = array_search($parser->getCurrentArgument(), $subcommands);
+		
+		if( $subCommandIndex !== false ) {
+			$parser->advance();
+			$subcommand = $subcommands[$subCommandIndex]; 
+			unset($subcommands[$subCommandIndex]);
+			$parser->setSpecs( $subcommand_specs[$subcommand] );
+			$result['subCommands'][ $subcommand ] = $parser->continueParse();
+		} else {
+			$arguments[] = $parser->advance();
+		}
+	}
+
+	return $result;
 }
 ?>

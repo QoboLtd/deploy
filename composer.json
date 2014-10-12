@@ -1,6 +1,7 @@
 {
 	"require": {
-		"qobo/pattern": ">=1.0.4"
+		"qobo/pattern": ">=1.0.4",
+		"corneltek/getoptionkit": "~2"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.3.*"
