@@ -15,7 +15,7 @@ abstract class Config implements iConfig {
 	/**
 	 * Parsed config data
 	 */
-	protected $data;
+	public $data;
 	
 	/**
 	 * Get configuration name
@@ -24,22 +24,6 @@ abstract class Config implements iConfig {
 	 */
 	public function getName() {
 		return $this->file->getFilename();
-	}
-	
-	/**
-	 * Add runtime user parameters to configuration
-	 * 
-	 * @todo This should probably be a different Config handler
-	 * @param array $params List of parameters to add
-	 * @return void
-	 */
-	public function addUserParams(array $params = array()) {
-		if (empty($params)) {
-			return;
-		}
-
-		$pairs = $this->convertToPairs($params);
-		$this->data->{'user'} = (object) $pairs;
 	}
 	
 	/**

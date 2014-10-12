@@ -21,15 +21,5 @@ interface iConfig {
 	 * @return string
 	 */
 	public function getName();
-
-	/**
-	 * Get configuration value
-	 * 
-	 * @param string $property Configuration property
-	 * @param \stdClass $data (Optional) Configuration data
-	 * @param boolean $firstCall Flag for recursion control
-	 * @return mixed
-	 */
-	public function getValue($property, \stdClass $data = null, $firstCall = true);
 }
 ?>

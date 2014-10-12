@@ -4,20 +4,62 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6dfad5acf2e32862584d8ab90be640d9",
+    "hash": "d5d50594db2f97246c075004b80aedc8",
     "packages": [
         {
-            "name": "qobo/pattern",
-            "version": "v1.0.2",
+            "name": "corneltek/getoptionkit",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
-                "url": "https://github.com/QoboLtd/PHP-Pattern.git",
-                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14"
+                "url": "https://github.com/c9s/GetOptionKit.git",
+                "reference": "14775e92769fd12bcb56244ab6f9f9b142c92166"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/c77172ac8b3e3d7657759da01ce22a29a10b0c14",
-                "reference": "c77172ac8b3e3d7657759da01ce22a29a10b0c14",
+                "url": "https://api.github.com/repos/c9s/GetOptionKit/zipball/14775e92769fd12bcb56244ab6f9f9b142c92166",
+                "reference": "14775e92769fd12bcb56244ab6f9f9b142c92166",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "corneltek/phpunit-testmore": "dev-master",
+                "satooshi/php-coveralls": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "GetOptionKit": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Yo-An Lin",
+                    "email": "cornelius.howl@gmail.com",
+                    "homepage": "http://c9s.me"
+                }
+            ],
+            "description": "Powerful command-line option toolkit",
+            "homepage": "http://github.com/c9s/GetOptionKit",
+            "time": "2014-10-04 13:45:10"
+        },
+        {
+            "name": "qobo/pattern",
+            "version": "v1.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/QoboLtd/PHP-Pattern.git",
+                "reference": "57668c86f0caf3e66447f7341c5ee060181aa5b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/QoboLtd/PHP-Pattern/zipball/57668c86f0caf3e66447f7341c5ee060181aa5b3",
+                "reference": "57668c86f0caf3e66447f7341c5ee060181aa5b3",
                 "shasum": ""
             },
             "require": {
@@ -50,7 +92,7 @@
                 "strings",
                 "templating"
             ],
-            "time": "2014-10-09 03:33:47"
+            "time": "2014-10-12 11:38:58"
         }
     ],
     "packages-dev": [
@@ -801,7 +843,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
-    "prefer-stable": false,
     "platform": [],
     "platform-dev": []
 }

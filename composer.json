@@ -1,8 +1,23 @@
 {
+	"name": "qobo/deploy",
+	"description": "Deployment automation framework",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "Leonid Mamchenkov",
+			"email": "leonid@mamchenkov.net",
+			"homepage": "http://mamchenkov.net",
+			"role": "Developer"
+		}
+	],
 	"require": {
-		"qobo/pattern": "1.0.*"
+		"qobo/pattern": ">=1.0.4",
+		"corneltek/getoptionkit": "~2"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "4.3.*"
-	}
+	},
+	"bin": [
+		"deploy"
+	]
 }
