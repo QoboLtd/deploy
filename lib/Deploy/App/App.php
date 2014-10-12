@@ -1,6 +1,8 @@
 <?php
 namespace Deploy\App;
 
+use \Deploy\Exception\MissingParameterException;
+
 use \GetOptionKit\OptionCollection;
 use \GetOptionKit\ContinuousOptionParser;
 use \GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
@@ -16,13 +18,13 @@ class App {
 
 	public function run() {
 		if (empty($this->argv['tasks'])) {
-			throw new \InvalidArgumentException("No tasks given");
+			throw new MissingParameterException("task");
 		}
 		
 		foreach ($this->argv['tasks'] as $taskName => $options) {
 			$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($taskName) . 'Task';
 			if (!class_exists($className)) {
-				throw new \InvalidArgumentException("Task $taskName is not supported");
+				throw new \RuntimeException("Task $taskName is not supported");
 			}
 			$task = new $className($options->toArray());
 			$task->run();

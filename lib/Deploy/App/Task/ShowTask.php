@@ -1,6 +1,7 @@
 <?php
 namespace Deploy\App\Task;
 
+use \Deploy\Exception\MissingParameterException;
 use \Deploy\Config\Factory;
 use \Deploy\Runnable\Project;
 
@@ -10,7 +11,7 @@ class ShowTask {
 
 	public function __construct(array $params = array()) {
 		if (empty($params['project'])) {
-			throw new \InvalidArgumentException("Missing required parameter: project");
+			throw new MissingParameterException('project');
 		}
 		$this->params = $params;
 	}

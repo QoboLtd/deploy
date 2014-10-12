@@ -1,6 +1,7 @@
 <?php
 namespace Deploy\App\Task;
 
+use \Deploy\Exception\MissingParameterException;
 use \Deploy\Config\Factory;
 use \Deploy\Runnable\Project;
 
@@ -14,14 +15,11 @@ class RunTask {
 	}
 
 	protected function validateParams() {
-		if (empty($this->params['project'])) {
-			throw new \InvalidArgumentException("Missing required parameter: project");
-		}
-		if (empty($this->params['env'])) {
-			throw new \InvalidArgumentException("Missing required parameter: env");
-		}
-		if (empty($this->params['command'])) {
-			throw new \InvalidArgumentException("Missing required parameter: command");
+		$requiredParams = array('project', 'env', 'command');
+		foreach ($requiredParams as $requiredParam) {
+			if (empty($this->params[$requiredParam])) {
+				throw new MissingParameterException($requiredParam);
+			}
 		}
 	}
 

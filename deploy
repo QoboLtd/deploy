@@ -18,9 +18,16 @@ try {
 	$app = new App($argv);
 	$app->run();
 }
-catch (\Exception $e) {
+// Missing parameters show the help message and error
+catch (\Deploy\Exception\MissingParameterException $e) {
 	print "ERROR: " . $e->getMessage();
 	print App::help();
+	die(1);
+
+}
+// Everything else just shows the error
+catch (\Exception $e) {
+	print "ERROR: " . $e->getMessage();
 	die(1);
 }
 
