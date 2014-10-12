@@ -7,13 +7,7 @@
  * 
  * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
  */
-namespace Deploy;
-
-use \Deploy\Config\Factory;
-use \Deploy\Runnable\Project;
-
-use \GetOptionKit\OptionCollection;
-use \GetOptionKit\ContinuousOptionParser;
+namespace Deploy\App;
 
 // Load libraries
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
@@ -21,190 +15,13 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARAT
 
 
 try {
-	$options = parseOptions($argv);
+	$app = new App($argv);
+	$app->run();
 }
 catch (\Exception $e) {
 	print "ERROR: " . $e->getMessage();
-	die();
-}
-print_r($options); 
-
-$projectName = null;
-if (count($argv) >= 1) {
-	$projectName = $argv[0];
-}
-// These are the things we need to know
-if (count($argv) <> 3) {
-	printHelp($projectName);
-	die();
-}
-print_r($options);
-die();
-
-$target = array();
-$target['project'] = array($projectName);
-$target['environment'] = array($argv[1]);
-$target['command'] = array($argv[2]);
-
-try {
-	$config = Factory::init($projectName);
-	$config = $config->data;
-	$config[Project::TARGET_KEY] = $target;
-
-	$project = new Project($config);
-	$project->run();
-} catch (Exception $e) {
-	die("\n\nERROR: " . $e->getMessage() . "\n");
+	print App::help();
+	die(1);
 }
 
-/**
- * Print help
- * 
- * If the valid project configuration name is given,
- * then we only list the options for that project.  If no
- * name is given, then we list all projects.  Otherwise,
- * we show an error
- * 
- * @param string $projectName
- * @return void
- */
-function printHelp($projectName) {
-	print "\n\nUSAGE: deploy [OPTIONS] COMMAND [COMMAND-OPTIONS]\n";
-	
-	$printer = new \GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
-	
-	list($appspecs, $subcommand_specs) = getOptionsSpec();
-	print "\nMain [OPTIONS] are:\n";
-	
-	print $printer->render($appspecs);
-
-	print "\nCommand options are:\n";
-	foreach ($subcommand_specs as $subcommand => $details) {
-		print "\n$subcommand - " . $details['description'] . "\n";
-		print $printer->render($details['specs']);
-	}
-	
-	if (empty($projectName)) {
-		$projects = Factory::getList();
-		print "Available projects:\n\n";
-		foreach ($projects as $project) {
-			print "\t- " . $project . "\n";
-		}
-		return;
-	}
-	
-	try {
-		$config = Factory::init($projectName);
-		$config = $config->data;
-
-		$project = new Project($config);
-
-	}
-	catch (\Exception $e) {
-		die("\n\nERROR: " . $e->getMessage() . "\n");
-	}
-	print "Here is the list of possible options for $projectName:\n\n";
-	$children = $project->listChildren();
-	printOptions($children);
-	
-}
-
-/**
- * Recursively print available options
- * 
- * @param array $options Options to print
- * @param integer $depth Indentation depth
- * @return void
- */
-function printOptions($options, $depth = 0) {
-	foreach ($options as $name => $children) {
-		if ($depth > 0) {
-			list($type, $name) = explode(':', $name, 2);
-			print str_repeat("\t", $depth) . '- ' . "$type $name\n";
-		}
-		$depth++;
-		
-		if (empty($children)) {
-			continue;
-		}
-		foreach ($children as $child) {
-			printOptions($child, $depth);
-		}
-	}
-}
-
-function getOptionsSpec() {
-	$result = array();
-	
-	$app = new OptionCollection;
-	$app->add('v|verbose', 'verbose output.');
-
-	$run_cmdspecs = new OptionCollection;
-	$run_cmdspecs->add('t|test', 'test run only.')
-		->isa('Boolean');
-	$run_cmdspecs->add('p|project:', 'project to deploy.')
-		->isa('String')
-		//->validValues(array('Factory', 'getList'))
-		->required();
-	$run_cmdspecs->add('e|env:', 'environment to deploy.')
-		->isa('String')
-		->required();
-	$run_cmdspecs->add('c|command:', 'command to run.')
-		->isa('String')
-		->required();
-
-	$list_cmdspecs = new OptionCollection;
-	//$list_cmdspecs->add('v');
-
-	$show_cmdspecs = new OptionCollection;
-	$show_cmdspecs->add('p|project:', 'project to show')
-		->isa('String')
-		//->validValues(array('Factory', 'getList'))
-		->required();
-
-
-	$subcommand_specs = array(
-		'run' => array('description' => 'Run a deployment command', 'specs' => $run_cmdspecs),
-		'list' => array('description' => 'List available projects', 'specs' => $list_cmdspecs),
-		'show' => array('description' => 'Show project targets', 'specs' => $show_cmdspecs),
-	);
-
-	$result = array($app, $subcommand_specs);
-	
-	return $result;
-}
-
-function parseOptions($argv) {
-	$result = array();
-
-	list($app, $subcommands) = getOptionsSpec();
-	
-	$subcommand_specs = array();
-	foreach ($subcommands as $command => $options) {
-		$subcommand_specs[$command] = $options['specs'];
-	}
-	$subcommands = array_keys($subcommand_specs);
-
-	$parser = new ContinuousOptionParser( $app );
-	
-	$result['app'] = $parser->parse( $argv );
-	$result['subCommands'] = array();
-	
-	$arguments = array();
-	while( ! $parser->isEnd() ) {
-		$subCommandIndex = array_search($parser->getCurrentArgument(), $subcommands);
-		
-		if( $subCommandIndex !== false ) {
-			$parser->advance();
-			$subcommand = $subcommands[$subCommandIndex]; 
-			unset($subcommands[$subCommandIndex]);
-			$parser->setSpecs( $subcommand_specs[$subcommand] );
-			$result['subCommands'][ $subcommand ] = $parser->continueParse();
-		} else {
-			$arguments[] = $parser->advance();
-		}
-	}
-
-	return $result;
-}
 ?>
