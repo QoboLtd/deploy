@@ -33,7 +33,7 @@ class RunTask {
 
 		$config = Factory::init($this->params['project']);
 		$config = $config->data;
-		$config[Project::TARGET_KEY] = $target;
+		$config[Project::CONFIG_KEY_TARGET] = $target;
 
 		$project = new Project($config);
 		$project->run();

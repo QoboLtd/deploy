@@ -3,7 +3,7 @@ namespace Deploy\Runnable;
 
 abstract class Runnable implements iRunnable {
 
-	const TARGET_KEY = '_target';
+	const CONFIG_KEY_TARGET = '_target';
 	
 	protected $config;
 
@@ -41,11 +41,11 @@ abstract class Runnable implements iRunnable {
 			return $result;
 		}
 
-		if (!isset($this->config[ self::TARGET_KEY ])) {
+		if (!isset($this->config[ self::CONFIG_KEY_TARGET ])) {
 			throw new \RuntimeException("Target checking is required, but no target is set");
 		}
 
-		$target = $this->config[ self::TARGET_KEY ];
+		$target = $this->config[ self::CONFIG_KEY_TARGET ];
 		if (!is_array($target)) {
 			throw new \RuntimeException("Target checking is required, but target definition is invalid");
 		}
@@ -80,7 +80,7 @@ abstract class Runnable implements iRunnable {
 		return $result;
 	}
 
-	public function run() {
+	public function run(array $options = array()) {
 		if (!$this->isInTarget()) {
 			return;
 		}

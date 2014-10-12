@@ -25,7 +25,7 @@ class Command extends Runnable {
 		return $result;
 	}
 
-	public function run() {
+	public function run(array $options = array()) {
 		if (!$this->isInTarget()) {
 			return;
 		}
