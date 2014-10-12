@@ -35,7 +35,12 @@ class RunTask {
 		$config = $config->data;
 		$config[Project::CONFIG_KEY_TARGET] = $target;
 
+		$options = array();
+		if (!empty($this->params['test']) && $this->params['test']) {
+			$options[Project::OPTION_KEY_TEST_ONLY] = true;
+		}
+
 		$project = new Project($config);
-		$project->run();
+		$project->run($options);
 	}
 }

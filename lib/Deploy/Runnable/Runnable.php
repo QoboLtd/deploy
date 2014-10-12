@@ -4,6 +4,7 @@ namespace Deploy\Runnable;
 abstract class Runnable implements iRunnable {
 
 	const CONFIG_KEY_TARGET = '_target';
+	const OPTION_KEY_TEST_ONLY = 'test';
 	
 	protected $config;
 
@@ -93,7 +94,7 @@ abstract class Runnable implements iRunnable {
 		foreach ($children as $name => $config) {
 			$config['name'] = $name;
 			$child = new $this->childrenClass($config, $this->config);
-			$child->run();
+			$child->run($options);
 		}
 	}
 

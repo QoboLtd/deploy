@@ -34,7 +34,13 @@ class Command extends Runnable {
 		if (empty($command)) {
 			return;
 		}
-		print "Executing: $command\n";
+
+		if (!empty($options[self::OPTION_KEY_TEST_ONLY]) && $options[self::OPTION_KEY_TEST_ONLY]) {
+			print "[TEST] Executing: $command\n";
+		}
+		else {
+			print "[REAL] Executing: $command\n";
+		}
 	}
 
 	public function listChildren() {
