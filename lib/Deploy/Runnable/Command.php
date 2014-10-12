@@ -9,9 +9,20 @@ class Command extends Runnable {
 	protected $targetCheck = true;
 
 	public function run() {
-		if ($this->isInTarget()) {
-			print $this->config['name'] . ': ' . $this->config['command'] . "\n";
+		if (!$this->isInTarget()) {
+			return;
 		}
+		if (empty($this->config['command'])) {
+			return;
+		}
+		print $this->config['name'] . ': ' . $this->config['command'] . "\n";
+	}
+
+	public function listChildren($indent = 0) {
+		if (empty($this->config['command'])) {
+			return;
+		}
+		parent::listChildren($indent);
 	}
 }
 ?>

@@ -14,29 +14,46 @@ use \Deploy\Runnable\Project;
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Deploy' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-// We keep all configuration files in etc/ folder
-$configFolder = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR;
-
 array_shift($argv);
+
+$projectName = null;
+if (count($argv) >= 1) {
+	$projectName = $argv[0];
+}
 // These are the things we need to know
 if (count($argv) <> 3) {
-	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	printHelp($projectName);
 	die();
 }
 
 $target = array();
-$target['project'] = array($argv[0]);
+$target['project'] = array($projectName);
 $target['environment'] = array($argv[1]);
 $target['command'] = array($argv[2]);
 
 try {
-	$config = Factory::init(new \splFileInfo($target['project'][0]));
+	$config = Factory::init(new \splFileInfo($projectName));
 	$config = $config->data;
-	$config['_target'] = $target;
+	$config[Project::TARGET_KEY] = $target;
 
 	$project = new Project($config);
 	$project->run();
 } catch (Exception $e) {
 	die("\n\nERROR: " . $e->getMessage() . "\n");
+}
+
+function printHelp($projectName) {
+	print "\nUsage: ./deploy PROJECT ENVIRONMENT COMMAND\n\n";
+	if (empty($projectName)) {
+		return;
+	}
+	
+	print "Here is the list of possible options:\n";
+	
+	$config = Factory::init(new \splFileInfo($projectName));
+	$config = $config->data;
+
+	$project = new Project($config);
+	$project->listChildren();
 }
 ?>

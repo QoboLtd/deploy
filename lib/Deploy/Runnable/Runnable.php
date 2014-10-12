@@ -3,12 +3,13 @@ namespace Deploy\Runnable;
 
 abstract class Runnable implements iRunnable {
 
+	const TARGET_KEY = '_target';
+	
 	protected $config;
 
 	protected $childrenClass = 'Runnable';
 	protected $childrenKey   = 'children';
 
-	protected $targetKey = '_target';
 	protected $targetCheck = false;
 
 	public function __construct(array $config, array $parentConfig = array()) {
@@ -40,11 +41,11 @@ abstract class Runnable implements iRunnable {
 			return $result;
 		}
 
-		if (!isset($this->config[ $this->targetKey ])) {
+		if (!isset($this->config[ self::TARGET_KEY ])) {
 			throw new \RuntimeException("Target checking is required, but no target is set");
 		}
 
-		$target = $this->config[ $this->targetKey ];
+		$target = $this->config[ self::TARGET_KEY ];
 		if (!is_array($target)) {
 			throw new \RuntimeException("Target checking is required, but target definition is invalid");
 		}
@@ -93,6 +94,21 @@ abstract class Runnable implements iRunnable {
 			$config['name'] = $name;
 			$child = new $this->childrenClass($config, $this->config);
 			$child->run();
+		}
+	}
+
+	public function listChildren($indent = 0) {
+		print str_repeat("\t", $indent++) . $this->config['type'] . ' ' . $this->config['name'] . "\n";
+		
+		$children = $this->getChildren();
+		if (empty($children)) {
+			return;
+		}
+
+		foreach ($children as $name => $config) {
+			$config['name'] = $name;
+			$child = new $this->childrenClass($config, $this->config);
+			$child->listChildren($indent);
 		}
 	}
 }
