@@ -17,18 +17,55 @@ Here are things that help to make sense of this all:
 * Each of your projects already has a build automation script (phing, phake, make, etc)
 * You want to separate build automation from infrastructure configuration automation.
 
+Install
+=======
+
+Installing with [composer](https://getcomposer.org/) is a breeze.  Create a new folder:
+
+```
+$ mkdir my-deploys
+$ cd my-deploys
+```
+
+Create ```composer.json``` file with the following content:
+
+```
+{
+	"require": {
+		"qobo/deploy": "~1.0"
+	}
+}
+```
+
+Now let composer do its magic:
+
+```
+$ composer install
+```
+
+You should see ```vendor``` folder and have ```vendor/bin/deploy``` available for
+execution.
+
+Now, create a folder for your configuration files.  If you call it ```etc/``` your
+life will be much easier:
+
+```
+$ mkdir etc
+```
+
+Now you can run the deploy script to examine available parameters and such:
+
+```
+$ ./vendor/bin/deploy
+```
+
+It won't be much until you create some configuration files though.  For a starting
+point, use the sample provided in ```vendor/qobo/deploy/etc/some.project.com.jsom```
+
 Usage
 =====
 
-Clone the project to your bastion/gateway machine or any other host that has access to
-all locations of all environments (you can proxy/tunnel things, but that's a form of
-black magic for now).
-
-```
-$ git clone deploy.repo.git
-```
-
-Create a JSON configuration file for each of your projects.  Here is an example file from ```etc/some.domain.com.json```:
+First, create at least one configuration file, like this one:
 
 ```
 {
@@ -104,19 +141,19 @@ Create a JSON configuration file for each of your projects.  Here is an example 
 Now you are ready to deploy.  Have a look at the available projects:
 
 ```
-$ deploy list
+$ ./vendor/bin/deploy list
 ```
 
 Examine deployment targets from a specific project:
 
 ```
-$ deploy show --project some.domain.com
+$ ./vendor/bin/deploy show --project some.domain.com
 ```
 
 See what is going to be executed (--test)
 
 ```
-$ deploy run --test --project some.domain.com --env live --command install
+$ ./vendor/bin/deploy run --test --project some.domain.com --env live --command install
 ```
 
 Running deploy script without parameters or with an invalid set of parameters
