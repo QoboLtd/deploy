@@ -1,6 +1,8 @@
 Deploy
 ======
 
+[![Build Status](https://travis-ci.org/QoboLtd/deploy.svg?branch=master)](https://travis-ci.org/QoboLtd/deploy)
+
 Deploy is a deployment automation framework.
 
 Assumptions
