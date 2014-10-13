@@ -11,7 +11,7 @@
 		}
 	],
 	"require": {
-		"qobo/pattern": ">=1.0.4",
+		"qobo/pattern": "~1.0",
 		"corneltek/getoptionkit": "~2"
 	},
 	"require-dev": {
