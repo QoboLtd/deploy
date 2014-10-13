@@ -1,6 +1,22 @@
 <?php
-// Load composer
-require_once 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+// Load composer libraries
+// ... from project root/vendor/autoload.php
+$autoloadFile = dirname(__FILE__) . DIRECTORY_SEPARATOR 
+	. '..' . DIRECTORY_SEPARATOR
+	. '..' . DIRECTORY_SEPARATOR
+	. 'vendor' . DIRECTORY_SEPARATOR 
+	. 'autoload.php';
+// ... otherwise from whoever is using us/vendor/autoload.php
+if (!file_exists($autoloadFile)) {
+	$autoloadFile = dirname(__FILE__) . DIRECTORY_SEPARATOR 
+		. '..' . DIRECTORY_SEPARATOR
+		. '..' . DIRECTORY_SEPARATOR
+		. '..' . DIRECTORY_SEPARATOR
+		. '..' . DIRECTORY_SEPARATOR
+		. 'vendor' . DIRECTORY_SEPARATOR 
+		. 'autoload.php';
+}
+require_once $autoloadFile;
 /**
  * autoloader for namespaced classed
  * 
