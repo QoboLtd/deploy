@@ -1,6 +1,6 @@
 <?php
 // Load composer
-require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+require_once 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 /**
  * autoloader for namespaced classed
  * 
