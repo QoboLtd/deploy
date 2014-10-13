@@ -13,6 +13,7 @@ if (!file_exists($autoloadFile)) {
 		. '..' . DIRECTORY_SEPARATOR
 		. '..' . DIRECTORY_SEPARATOR
 		. '..' . DIRECTORY_SEPARATOR
+		. '..' . DIRECTORY_SEPARATOR
 		. 'vendor' . DIRECTORY_SEPARATOR 
 		. 'autoload.php';
 }
