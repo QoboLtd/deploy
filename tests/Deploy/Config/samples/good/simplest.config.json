@@ -1,25 +1,25 @@
 {
-	"version": "1",
-	"project": {
-		"name": "Simple Project",
+	"type": "project",
+	"name": "Simple Project",
 
-		"commands": {
-			"test": "test"
-		},
+	"commands": {
+		"test": {
+			"type":"command", 
+			"command":"test"
+		}
+	},
 
-		"environments": {
-			"live": {
-				"locations": [
-					{
-						"type": "ssh",
-						"params": {
-							"user": "root",
-							"host": "localhost",
-							"dir": "/tmp"
-						}
-					}
-				]
+	"environments": {
+		"live": {
+			"type":"environment",
+			"name":"live",
+			"locations": {
+				"web1": {
+					"type": "location",
+					"name": "web1"
+				}
 			}
+			
 		}
 	}
 }

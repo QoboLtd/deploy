@@ -9,6 +9,14 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATO
  */
 class FactoryTest extends \PHPUnit_Framework_TestCase {
 
+	public function getBadConfigDirPath() {
+		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR . 'bad'; 
+	}
+	
+	public function getGoodConfigDirPath() {
+		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR . 'good'; 
+	}
+
 	/**
 	 * Data provider of bad configuration files
 	 * 
@@ -16,7 +24,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function dataProvider_badConfigFiles() {
 		$result = array();
-		$dir = new \DirectoryIterator(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR . 'bad');
+		$dir = new \DirectoryIterator($this->getBadConfigDirPath());
 		foreach ($dir as $item) {
 			if ($item->isDot()) {
 				continue;
@@ -24,7 +32,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 			if (!$item->isFile()) {
 				continue;
 			}
-			$result[] = array($item->getRealPath());
+			$result[] = array(Factory::getNameFromFile($item));
 		}
 		return $result;
 	}
@@ -37,7 +45,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function dataProvider_goodConfigFiles() {
 		$result = array();
-		$dir = new \DirectoryIterator(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'samples' . DIRECTORY_SEPARATOR . 'good');
+		$dir = new \DirectoryIterator($this->getGoodConfigDirPath());
 		foreach ($dir as $item) {
 			if ($item->isDot()) {
 				continue;
@@ -45,7 +53,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 			if (!$item->isFile()) {
 				continue;
 			}
-			$result[] = array($item->getRealPath());
+			$result[] = array(Factory::getNameFromFile($item));
 		}
 		return $result;
 	}
@@ -57,7 +65,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider dataProvider_badConfigFiles
 	 */
 	public function test__init__failOnBadConfigFiles($configFile) {
-		$config = Factory::init(new \SplFileInfo($configFile));
+		$config = Factory::init($configFile, $this->getBadConfigDirPath());
 	}
 	
 	/**
@@ -66,7 +74,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider dataProvider_goodConfigFiles
 	 */
 	public function test__init__passOnGoodConfigFiles($configFile) {
-		$config = Factory::init(new \SplFileInfo($configFile));
+		$config = Factory::init($configFile, $this->getGoodConfigDirPath());
 		$result = $config->getName();
 		$this->assertFalse(empty($result));
 	}
