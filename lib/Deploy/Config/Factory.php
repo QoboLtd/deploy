@@ -68,7 +68,7 @@ class Factory {
 	 * @param \SplFileInfo $file Configuration file
 	 * @return string
 	 */
-	protected static function getNameFromFile(\SplFileInfo $file) {
+	public static function getNameFromFile(\SplFileInfo $file) {
 		$result = $file->getBasename('.' . $file->getExtension());
 		return $result;
 	}
@@ -80,7 +80,7 @@ class Factory {
 	 * @param string $dir Configuration folder
 	 * @return null|\SplFileInfo
 	 */
-	protected static function getFileFromName($name, $dir = self::DEFAULT_DIR) {
+	public static function getFileFromName($name, $dir = self::DEFAULT_DIR) {
 		$result = null;
 		
 		$dir = new \DirectoryIterator($dir);
