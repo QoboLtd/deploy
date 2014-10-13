@@ -62,6 +62,17 @@ $ ./vendor/bin/deploy
 It won't be much until you create some configuration files though.  For a starting
 point, use the sample provided in ```vendor/qobo/deploy/etc/some.project.com.jsom```
 
+For extra bonus, version your deployment configurations with git:
+
+```
+$ git init
+$ echo "vendor/" > .gitignore
+$ git add .
+$ git commit -m "Initial commit"
+```
+
+If you push this to a remote repository, you'll have a backup too! :)
+
 Usage
 =====
 
