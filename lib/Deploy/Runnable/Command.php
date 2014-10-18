@@ -44,6 +44,7 @@ class Command extends Runnable {
 		unset($output);
 		$result = exec($command . ' 2>&1', $output, $return);
 		$result = implode("\n", $output);
+		$result .= "\n";
 		if ($return > 0) {
 			throw new \RuntimeException($result);
 		}
