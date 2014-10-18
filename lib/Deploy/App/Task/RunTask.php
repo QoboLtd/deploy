@@ -5,13 +5,41 @@ use \Deploy\Exception\MissingParameterException;
 use \Deploy\Config\Factory;
 use \Deploy\Runnable\Project;
 
-class RunTask {
+use \GetOptionKit\OptionCollection;
 
-	protected $params;
+class RunTask extends BaseTask {
 
-	public function __construct($params) {
+	protected static $description = 'Run a deployment command';
+	
+	public function __construct(array $params = array()) {
 		$this->params = $params;
 		$this->validateParams();
+	}
+
+	/***
+	 * Get command line options spec
+	 * 
+	 * @return OptionCollection
+	 */
+	public static function getParams() {
+		$result = new OptionCollection;
+		
+		$result->add('t|test', 'test run only.')
+			->isa('Boolean');
+		
+		$result->add('p|project:', 'project to deploy.')
+			->isa('String')
+			->required();
+		
+		$result->add('e|env:', 'environment to deploy.')
+			->isa('String')
+			->required();
+		
+		$result->add('c|command:', 'command to run.')
+			->isa('String')
+			->required();
+
+		return $result;
 	}
 
 	protected function validateParams() {

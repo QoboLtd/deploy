@@ -71,48 +71,31 @@ class App {
 		return $result;
 	}
 
+	/**
+	 * Get the list of available tasks
+	 * 
+	 * @todo Make this dynamic with tasks in Tasks/ folder
+	 * @return array
+	 */
+	protected static function getTasks() {
+		$result = array();
+
+		$result['run'] = __NAMESPACE__ . '\Task\RunTask';
+		$result['list'] = __NAMESPACE__ . '\Task\ListTask';
+		$result['show'] = __NAMESPACE__ . '\Task\ShowTask';
+
+		return $result;
+	}
+
 	protected static function getOptionsTasksSpec() {
 		$result = array();
 		
-		// deploy run
-		$run = new OptionCollection;
-		$run->add('t|test', 'test run only.')
-			->isa('Boolean');
-		$run->add('p|project:', 'project to deploy.')
-			->isa('String')
-			//->validValues(array('Factory', 'getList'))
-			->required();
-		$run->add('e|env:', 'environment to deploy.')
-			->isa('String')
-			->required();
-		$run->add('c|command:', 'command to run.')
-			->isa('String')
-			->required();
-
-		// deploy list
-		$list = new OptionCollection;
-
-		// deploy show
-		$show = new OptionCollection;
-		$show->add('p|project:', 'project to show')
-			->isa('String')
-			//->validValues(array('Factory', 'getList'))
-			->required();
-
-		$result = array(
-			'run' => array(
-				'description' => 'Run a deployment command', 
-				'specs' => $run,
-			),
-			'list' => array(
-				'description' => 'List available projects', 
-				'specs' => $list,
-			),
-			'show' => array(
-				'description' => 'Show project targets', 
-				'specs' => $show,
-			),
-		);
+		$tasks = self::getTasks();
+		foreach ($tasks as $task => $taskClass) {
+			$result[$task] = array();
+			$result[$task]['description'] = $taskClass::getDescription();
+			$result[$task]['specs'] = $taskClass::getParams();
+		}
 
 		return $result;
 	}

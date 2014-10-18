@@ -3,11 +3,11 @@ namespace Deploy\App\Task;
 
 use \Deploy\Config\Factory;
 
-class ListTask {
+class ListTask extends BaseTask{
 
-	protected $params;
+	protected static $description = 'List available projects';
 
-	public function __construct($params) {
+	public function __construct(array $params = array()) {
 		$this->params = $params;
 	}
 
@@ -20,4 +20,5 @@ class ListTask {
 			print "\t- " . $project . "\n";
 		}
 	}
+	
 }

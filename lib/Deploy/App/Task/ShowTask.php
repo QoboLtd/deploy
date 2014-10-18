@@ -5,10 +5,12 @@ use \Deploy\Exception\MissingParameterException;
 use \Deploy\Config\Factory;
 use \Deploy\Runnable\Project;
 
-class ShowTask {
+use \GetOptionKit\OptionCollection;
 
-	protected $params;
+class ShowTask extends BaseTask {
 
+	protected static $description = 'Show project targets';
+	
 	public function __construct(array $params = array()) {
 		if (empty($params['project'])) {
 			throw new MissingParameterException('project');
@@ -30,6 +32,21 @@ class ShowTask {
 
 	}
 	
+	/***
+	 * Get command line options spec
+	 * 
+	 * @return OptionCollection
+	 */
+	public static function getParams() {
+		$result = new OptionCollection;
+		
+		$result->add('p|project:', 'project to show')
+			->isa('String')
+			->required();
+
+		return $result;
+	}
+
 	/**
 	 * Recursively print available options
 	 * 
