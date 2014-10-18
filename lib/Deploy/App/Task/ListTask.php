@@ -15,6 +15,7 @@ class ListTask extends BaseTask{
 
 	public function run() {
 		$projects = Factory::getList();
+		asort($projects);
 		
 		if (!empty($this->params['simple']) && $this->params['simple']) {
 			foreach ($projects as $project) {
