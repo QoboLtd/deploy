@@ -35,6 +35,8 @@ class Command extends Runnable {
 			return;
 		}
 
+		$command .= ' 2>&1';
+
 		if (!empty($options[self::OPTION_KEY_TEST_ONLY]) && $options[self::OPTION_KEY_TEST_ONLY]) {
 			print "[TEST] Executing: $command\n";
 			return;
@@ -42,7 +44,7 @@ class Command extends Runnable {
 		print "[REAL] Executing: $command\n";
 
 		unset($output);
-		$result = exec($command . ' 2>&1', $output, $return);
+		$result = exec($command, $output, $return);
 		$result = implode("\n", $output);
 		$result .= "\n";
 		if ($return > 0) {
