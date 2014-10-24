@@ -38,6 +38,15 @@ class RunTask extends BaseTask {
 		$result->add('c|command:', 'command to run.')
 			->isa('String')
 			->required();
+		
+		$result->add('email-ok:', 'email to notify of success.')
+			->isa('String');
+		
+		$result->add('email-fail:', 'email to notify of failure.')
+			->isa('String');
+		
+		$result->add('email-from:', 'email to send from.')
+			->isa('String');
 
 		return $result;
 	}
@@ -66,7 +75,46 @@ class RunTask extends BaseTask {
 			$options[Project::OPTION_KEY_TEST_ONLY] = true;
 		}
 
-		$project = new Project($config);
-		$project->run($options);
+		try {
+			$project = new Project($config);
+			$output = $project->run($options);
+			print $output;
+			$this->emailOk($output);
+		} catch (\Exception $e) {
+			$this->emailFail($e->getMessage());
+			throw $e;
+		}
+	}
+
+	public function emailOk($content) {
+		$to = empty($this->params['email-ok']) ? null : $this->params['email-ok'];
+		if (!empty($to)) {
+			$subject = 'Succes deploying ' . $this->params['project'] . ' to ' . $this->params['env'] . ' (' . $this->params['command'] . ')';
+			$this->sendMail($to, $subject, $content);
+		}
+	}
+
+	public function emailFail($content) {
+		$to = empty($this->params['email-fail']) ? null : $this->params['email-fail'];
+		if (!empty($to)) {
+			$subject = 'Failed deploying ' . $this->params['project'] . ' to ' . $this->params['env'] . ' (' . $this->params['command'] . ')';
+			$this->sendMail($to, $subject, $content);
+		}
+	}
+
+	public function sendMail($to, $subject, $content) {
+		$from = empty($this->params['email-from']) ? null : $this->params['email-from'];
+		if (empty($from)) {
+			$processUser = posix_getpwuid(posix_geteuid());
+			$from = $processUser['name'] . '@' . gethostname();
+		}
+		
+		$transport = \Swift_SmtpTransport::newInstance('localhost', 25);
+		$mailer = \Swift_Mailer::newInstance($transport);
+		$message = \Swift_Message::newInstance($subject);
+		$message->setTo($to);
+		$message->setFrom($from);
+		$message->setBody($content);
+		$result = $mailer->send($message);
 	}
 }

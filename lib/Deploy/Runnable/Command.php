@@ -50,8 +50,7 @@ class Command extends Runnable {
 		if ($return > 0) {
 			throw new \RuntimeException($result);
 		}
-		print $result;
-
+		return $result;
 	}
 
 	public function listChildren() {
