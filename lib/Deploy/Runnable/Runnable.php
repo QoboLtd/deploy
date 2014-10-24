@@ -82,6 +82,8 @@ abstract class Runnable implements iRunnable {
 	}
 
 	public function run(array $options = array()) {
+		$result = '';
+		
 		if (!$this->isInTarget()) {
 			return;
 		}
@@ -94,8 +96,16 @@ abstract class Runnable implements iRunnable {
 		foreach ($children as $name => $config) {
 			$config['name'] = $name;
 			$child = new $this->childrenClass($config, $this->config);
-			$child->run($options);
+			$output = $child->run($options);
+			if ($output) {
+				$class = array_pop(explode('\\', $this->childrenClass));
+				$result .= "Processing " .  $class . ' ' . $name . "\n";
+				$result .= $output;
+				$result .= "\n";
+			}
 		}
+
+		return $result;
 	}
 
 	public function listChildren() {
