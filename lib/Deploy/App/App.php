@@ -22,12 +22,7 @@ class App {
 		}
 		
 		foreach ($this->argv['tasks'] as $taskName => $options) {
-			$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($taskName) . 'Task';
-			if (!class_exists($className)) {
-				throw new \RuntimeException("Task $taskName is not supported");
-			}
-			$task = new $className($options->toArray());
-			$task->run();
+			$this->runTask($taskName, $options);
 		}
 	}
 
@@ -54,6 +49,16 @@ class App {
 		return $result;
 	}
 	
+	protected function runTask($task, $options) {
+		$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($task) . 'Task';
+		if (!class_exists($className)) {
+			throw new \RuntimeException("Task $task is not supported");
+		}
+		$task = new $className($options->toArray());
+		$task->run();
+	}
+
+
 	protected static function getOptionsSpec() {
 		$result = array();
 		
