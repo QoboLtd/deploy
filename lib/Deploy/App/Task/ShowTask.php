@@ -7,10 +7,21 @@ use \Deploy\Runnable\Project;
 
 use \GetOptionKit\OptionCollection;
 
+/**
+ * ShowTask class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 class ShowTask extends BaseTask {
 
 	protected static $description = 'Show project targets';
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param array $params Task run params
+	 * @return object
+	 */
 	public function __construct(array $params = array()) {
 		if (empty($params['project'])) {
 			throw new MissingParameterException('project');
@@ -18,18 +29,26 @@ class ShowTask extends BaseTask {
 		$this->params = $params;
 	}
 
+	/**
+	 * Run task
+	 * 
+	 * @return string
+	 */
 	public function run() {
+		$result = '';
 		
 		$config = Factory::init($this->params['project']);
 		$config = $config->data;
 		
 		$project = new Project($config);
 			
-		print "\n";
-		print "Targets for project " . $this->params['project'] . ":\n\n";
+		$result .= "\n";
+		$result .= "Targets for project " . $this->params['project'] . ":\n\n";
+		
 		$children = $project->listChildren();
-		$this->printOptions($children);
+		$result .= $this->printOptions($children);
 
+		return $result;
 	}
 	
 	/***
@@ -52,13 +71,15 @@ class ShowTask extends BaseTask {
 	 * 
 	 * @param array $options Options to print
 	 * @param integer $depth Indentation depth
-	 * @return void
+	 * @return string
 	 */
 	protected function printOptions($options, $depth = 0) {
+		$result = '';
+		
 		foreach ($options as $name => $children) {
 			if ($depth > 0) {
 				list($type, $name) = explode(':', $name, 2);
-				print str_repeat("\t", $depth) . '- ' . "$type $name\n";
+				$result .= str_repeat("\t", $depth) . '- ' . "$type $name\n";
 			}
 			$depth++;
 			
@@ -66,9 +87,11 @@ class ShowTask extends BaseTask {
 				continue;
 			}
 			foreach ($children as $child) {
-				$this->printOptions($child, $depth);
+				$result .= $this->printOptions($child, $depth);
 			}
 		}
+
+		return $result;
 	}
 
 }

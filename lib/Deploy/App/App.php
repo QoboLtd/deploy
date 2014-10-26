@@ -7,30 +7,95 @@ use \GetOptionKit\OptionCollection;
 use \GetOptionKit\ContinuousOptionParser;
 use \GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
 
+/**
+ * App Class
+ * 
+ * @author Leonid Mamchenikov <l.mamchenkov@qobo.biz>
+ */
 class App {
 
-	private $argv;
+	protected $argv;
+	protected $result;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param array $argv Options
+	 */
 	public function __construct($argv) {
 		$this->argv = $argv;
+		$this->result = array();
 		$this->parseOptions();
 	}
 
+	/**
+	 * Run app based on given parameters
+	 * 
+	 * @throws MissingParameterException
+	 * @return array
+	 */
 	public function run() {
 		if (empty($this->argv['tasks'])) {
 			throw new MissingParameterException("task");
 		}
 		
 		foreach ($this->argv['tasks'] as $taskName => $options) {
-			$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($taskName) . 'Task';
-			if (!class_exists($className)) {
-				throw new \RuntimeException("Task $taskName is not supported");
+			$this->result[ $taskName ] = $this->runTask($taskName, $options);
+		}
+
+		return $this->result;
+	}
+
+	/**
+	 * Get app run result
+	 * 
+	 * Return either all results or result for a given task
+	 * 
+	 * @param string $task (Optional) Task name
+	 * @return mixed
+	 */
+	public function getResult($task = null) {
+		$result = null;
+
+		if (empty($task)) {
+			$result = $this->result;
+			return $result;
+		}
+
+		if (!empty($this->result[$task])) {
+			return $result;
+		}
+
+		$result = $this->result[$taks];
+		
+		return $result;
+	}
+
+	/**
+	 * Print app run result
+	 * 
+	 * Print either all results or result for a given task
+	 * 
+	 * @param string $task (Optional) Task name
+	 * @return void
+	 */
+	public function printResult($task = null) {
+		$result = $this->getResult($task);
+		if (empty($task)) {
+			foreach ($result as $task => $output) {
+				print $output;
 			}
-			$task = new $className($options->toArray());
-			$task->run();
+		}
+		else {
+			print $result;
 		}
 	}
 
+	/**
+	 * Help message
+	 * 
+	 * @return string
+	 */
 	public static function help() {
 		$result = '';
 		
@@ -54,6 +119,34 @@ class App {
 		return $result;
 	}
 	
+	/**
+	 * Run a single task with given options
+	 * 
+	 * @throws \RuntimeException
+	 * @param string $task Task name
+	 * @param OptionCollection $options Options
+	 * @return mixed
+	 */
+	protected function runTask($task, $options) {
+		$result = null;
+		
+		$className = __NAMESPACE__ . '\\' . 'Task' . '\\' . ucfirst($task) . 'Task';
+		if (!class_exists($className)) {
+			throw new \RuntimeException("Task $task is not supported");
+		}
+		$task = new $className($options->toArray());
+		$result = $task->run();
+
+		return $result;
+	}
+
+	/**
+	 * Get options spec
+	 * 
+	 * Get options specification for the app itself, and for each of the supported tasks.
+	 * 
+	 * @return array
+	 */
 	protected static function getOptionsSpec() {
 		$result = array();
 		
@@ -65,9 +158,13 @@ class App {
 		return $result;
 	}
 
+	/**
+	 * Get options spec for the app
+	 * 
+	 * @return OptionCollection
+	 */
 	protected static function getOptionsAppSpec() {
 		$result = new OptionCollection;
-		$result->add('v|verbose', 'verbose output.');
 		return $result;
 	}
 
@@ -87,6 +184,11 @@ class App {
 		return $result;
 	}
 
+	/**
+	 * Get options spec for supported tasks
+	 * 
+	 * @return array
+	 */
 	protected static function getOptionsTasksSpec() {
 		$result = array();
 		
@@ -100,6 +202,11 @@ class App {
 		return $result;
 	}
 	
+	/**
+	 * Parse options
+	 * 
+	 * @return void
+	 */
 	private function parseOptions() {
 		$result = array();
 

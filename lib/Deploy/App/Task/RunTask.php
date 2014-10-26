@@ -7,10 +7,21 @@ use \Deploy\Runnable\Project;
 
 use \GetOptionKit\OptionCollection;
 
+/**
+ * RunTask class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 class RunTask extends BaseTask {
 
 	protected static $description = 'Run a deployment command';
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param array $params Parameters for task run
+	 * @return object
+	 */
 	public function __construct(array $params = array()) {
 		$this->params = $params;
 		$this->validateParams();
@@ -51,6 +62,12 @@ class RunTask extends BaseTask {
 		return $result;
 	}
 
+	/**
+	 * Validate parameters
+	 * 
+	 * @throws MissingParameterException
+	 * @return void
+	 */
 	protected function validateParams() {
 		$requiredParams = array('project', 'env', 'command');
 		foreach ($requiredParams as $requiredParam) {
@@ -60,7 +77,15 @@ class RunTask extends BaseTask {
 		}
 	}
 
+	/**
+	 * Run task
+	 * 
+	 * @throws Exception
+	 * @return string
+	 */
 	public function run() {
+		$result = '';
+		
 		$target = array();
 		$target['project'] = array( $this->params['project'] );
 		$target['environment'] = array( $this->params['env'] );
@@ -77,32 +102,63 @@ class RunTask extends BaseTask {
 
 		try {
 			$project = new Project($config);
-			$output = $project->run($options);
-			print $output;
-			$this->emailOk($output);
+			$result = $project->run($options);
+			$this->emailOk($result);
 		} catch (\Exception $e) {
 			$this->emailFail($e->getMessage());
 			throw $e;
 		}
+
+		return $result;
 	}
 
+	/**
+	 * Send success email
+	 * 
+	 * @param string $content
+	 * @return boolean True on success, false otherwise
+	 */
 	public function emailOk($content) {
+		$result = false;
+		
 		$to = empty($this->params['email-ok']) ? null : $this->params['email-ok'];
 		if (!empty($to)) {
 			$subject = 'Succes deploying ' . $this->params['project'] . ' to ' . $this->params['env'] . ' (' . $this->params['command'] . ')';
-			$this->sendMail($to, $subject, $content);
+			$result = $this->sendMail($to, $subject, $content);
 		}
+
+		return $result;
 	}
 
+	/**
+	 * Send fail email
+	 * 
+	 * @param string $content
+	 * @return boolean True on success, false otherwise
+	 */
 	public function emailFail($content) {
+		$result = false;
+		
 		$to = empty($this->params['email-fail']) ? null : $this->params['email-fail'];
 		if (!empty($to)) {
 			$subject = 'Failed deploying ' . $this->params['project'] . ' to ' . $this->params['env'] . ' (' . $this->params['command'] . ')';
-			$this->sendMail($to, $subject, $content);
+			$result = $this->sendMail($to, $subject, $content);
 		}
+
+		return $result;
 	}
 
+	/**
+	 * Send email
+	 * 
+	 * @param string $to Email recepient
+	 * @param string $subject Email subject
+	 * @param string $content Email body
+	 * @return boolean True on success, false otherwise
+	 */
 	public function sendMail($to, $subject, $content) {
+		$result = false;
+		
 		$from = empty($this->params['email-from']) ? null : $this->params['email-from'];
 		if (empty($from)) {
 			$processUser = posix_getpwuid(posix_geteuid());
@@ -115,6 +171,11 @@ class RunTask extends BaseTask {
 		$message->setTo($to);
 		$message->setFrom($from);
 		$message->setBody($content);
-		$result = $mailer->send($message);
+		
+		if ($mailer->send($message)) {
+			$result = true;
+		}
+
+		return $result;
 	}
 }
