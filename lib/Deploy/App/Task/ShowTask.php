@@ -7,10 +7,21 @@ use \Deploy\Runnable\Project;
 
 use \GetOptionKit\OptionCollection;
 
+/**
+ * ShowTask class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 class ShowTask extends BaseTask {
 
 	protected static $description = 'Show project targets';
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param array $params Task run params
+	 * @return object
+	 */
 	public function __construct(array $params = array()) {
 		if (empty($params['project'])) {
 			throw new MissingParameterException('project');
@@ -18,18 +29,27 @@ class ShowTask extends BaseTask {
 		$this->params = $params;
 	}
 
+	/**
+	 * Run task
+	 * 
+	 * @return string
+	 */
 	public function run() {
+		$result = '';
 		
 		$config = Factory::init($this->params['project']);
 		$config = $config->data;
 		
 		$project = new Project($config);
 			
-		print "\n";
-		print "Targets for project " . $this->params['project'] . ":\n\n";
+		$result .= "\n";
+		$result .= "Targets for project " . $this->params['project'] . ":\n\n";
+		
 		$children = $project->listChildren();
-		$this->printOptions($children);
+		$result .= $this->printOptions($children);
 
+		print $result;
+		return $result;
 	}
 	
 	/***

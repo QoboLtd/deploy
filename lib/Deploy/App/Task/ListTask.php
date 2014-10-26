@@ -5,30 +5,41 @@ use \Deploy\Config\Factory;
 
 use \GetOptionKit\OptionCollection;
 
+/**
+ * ListTask class
+ * 
+ * @author Leonid Mamchenkov <l.mamchenkov@qobo.biz>
+ */
 class ListTask extends BaseTask{
 
 	protected static $description = 'List available projects';
 
-	public function __construct(array $params = array()) {
-		$this->params = $params;
-	}
-
+	/**
+	 * Run task
+	 * 
+	 * @return string
+	 */
 	public function run() {
+		$result = '';
+		
 		$projects = Factory::getList();
 		asort($projects);
 		
 		if (!empty($this->params['simple']) && $this->params['simple']) {
 			foreach ($projects as $project) {
-				print "$project\n";
+				$result .= "$project\n";
 			}
 		}
 		else {
-			print "\n";
-			print "Available projects:\n\n";
+			$result .= "\n";
+			$result .= "Available projects:\n\n";
 			foreach ($projects as $project) {
-				print "\t- " . $project . "\n";
+				$result .= "\t- " . $project . "\n";
 			}
 		}
+
+		print $result;
+		return $result;
 	}
 	
 	/***
