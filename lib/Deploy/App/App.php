@@ -7,12 +7,24 @@ use \GetOptionKit\OptionCollection;
 use \GetOptionKit\ContinuousOptionParser;
 use \GetOptionKit\OptionPrinter\ConsoleOptionPrinter;
 
+/**
+ * App Class
+ * 
+ * @author Leonid Mamchenikov <l.mamchenkov@qobo.biz>
+ */
 class App {
 
-	private $argv;
+	protected $argv;
+	protected $result;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param array $argv Options
+	 */
 	public function __construct($argv) {
 		$this->argv = $argv;
+		$this->result = array();
 		$this->parseOptions();
 	}
 
@@ -22,8 +34,25 @@ class App {
 		}
 		
 		foreach ($this->argv['tasks'] as $taskName => $options) {
-			$this->runTask($taskName, $options);
+			$this->result[ $taskName ] = $this->runTask($taskName, $options);
 		}
+	}
+
+	public function getResult($task = null) {
+		$result = null;
+
+		if (empty($task)) {
+			$result = $this->result;
+			return $result;
+		}
+
+		if (!empty($this->result[$task])) {
+			return $result;
+		}
+
+		$result = $this->result[$taks];
+		
+		return $result;
 	}
 
 	public static function help() {
