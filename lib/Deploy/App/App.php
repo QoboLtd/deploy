@@ -51,6 +51,7 @@ class App {
 	 * 
 	 * Return either all results or result for a given task
 	 * 
+	 * @param string $task (Optional) Task name
 	 * @return mixed
 	 */
 	public function getResult($task = null) {
@@ -68,6 +69,26 @@ class App {
 		$result = $this->result[$taks];
 		
 		return $result;
+	}
+
+	/**
+	 * Print app run result
+	 * 
+	 * Print either all results or result for a given task
+	 * 
+	 * @param string $task (Optional) Task name
+	 * @return void
+	 */
+	public function printResult($task = null) {
+		$result = $this->getResult($task);
+		if (empty($task)) {
+			foreach ($result as $task => $output) {
+				print $output;
+			}
+		}
+		else {
+			print $result;
+		}
 	}
 
 	/**

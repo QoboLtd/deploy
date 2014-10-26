@@ -103,7 +103,6 @@ class RunTask extends BaseTask {
 		try {
 			$project = new Project($config);
 			$result = $project->run($options);
-			print $result;
 			$this->emailOk($result);
 		} catch (\Exception $e) {
 			$this->emailFail($e->getMessage());

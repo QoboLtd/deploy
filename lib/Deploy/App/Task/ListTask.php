@@ -38,7 +38,6 @@ class ListTask extends BaseTask{
 			}
 		}
 
-		print $result;
 		return $result;
 	}
 	

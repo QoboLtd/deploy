@@ -16,6 +16,7 @@ require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARAT
 try {
 	$app = new App($argv);
 	$app->run();
+	$app->printResult();
 }
 // Missing parameters show the help message and error
 catch (\Deploy\Exception\MissingParameterException $e) {

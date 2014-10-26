@@ -48,7 +48,6 @@ class ShowTask extends BaseTask {
 		$children = $project->listChildren();
 		$result .= $this->printOptions($children);
 
-		print $result;
 		return $result;
 	}
 	
@@ -72,13 +71,15 @@ class ShowTask extends BaseTask {
 	 * 
 	 * @param array $options Options to print
 	 * @param integer $depth Indentation depth
-	 * @return void
+	 * @return string
 	 */
 	protected function printOptions($options, $depth = 0) {
+		$result = '';
+		
 		foreach ($options as $name => $children) {
 			if ($depth > 0) {
 				list($type, $name) = explode(':', $name, 2);
-				print str_repeat("\t", $depth) . '- ' . "$type $name\n";
+				$result .= str_repeat("\t", $depth) . '- ' . "$type $name\n";
 			}
 			$depth++;
 			
@@ -86,9 +87,11 @@ class ShowTask extends BaseTask {
 				continue;
 			}
 			foreach ($children as $child) {
-				$this->printOptions($child, $depth);
+				$result .= $this->printOptions($child, $depth);
 			}
 		}
+
+		return $result;
 	}
 
 }
