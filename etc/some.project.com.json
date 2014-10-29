@@ -6,6 +6,14 @@
 			"base.dir": "/var/www/html/vhosts",
 			"project.dir": "test.qobo.biz",
 
+			"project.name": "test.qobo.biz",
+
+			"email.send": "false",
+			"email.to": "some@user",
+			"email.from": "some@user",
+			"email.subject": "Deployment notification for %%project.name%%",
+			"email.body": "",
+
 			"source.url": "git@github.com:QoboLtd/deploy.git",
 			"source.version": "master",
 
@@ -19,6 +27,7 @@
 		},
 
 		"commands": {
+			"foobar": { "type": "command", "command": "ls -al --color" },
 			"install": { 
 				"type": "command", 
 				"command": "%%ssh.command%% '%%source.install%% && cd %%project.dir%% && %%source.checkout%%'" 
