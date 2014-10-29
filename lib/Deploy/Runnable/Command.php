@@ -50,6 +50,7 @@ class Command extends Runnable {
 		if ($return > 0) {
 			throw new \RuntimeException($result);
 		}
+		
 		return $result;
 	}
 

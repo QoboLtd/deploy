@@ -12,6 +12,7 @@ abstract class Runnable implements iRunnable {
 	protected $childrenKey   = 'children';
 
 	protected $targetCheck = false;
+	protected $sendEmail = false;
 
 	public function __construct(array $config, array $parentConfig = array()) {
 		$this->config = $config;
@@ -103,6 +104,11 @@ abstract class Runnable implements iRunnable {
 				$result .= $output;
 				$result .= "\n";
 			}
+		}
+
+		if ($this->sendEmail) {
+			$email = new Email($this->config);
+			$email->send($result);
 		}
 
 		return $result;
