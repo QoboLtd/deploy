@@ -108,7 +108,6 @@ abstract class Runnable implements iRunnable {
 
 		if ($this->sendEmail) {
 			$email = new Email($this->config);
-			var_dump($email);
 			$email->send($result);
 		}
 
