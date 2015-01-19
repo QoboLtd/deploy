@@ -94,11 +94,13 @@ abstract class Runnable implements iRunnable {
 			return;
 		}
 		
+		$hasOutput = false;
 		foreach ($children as $name => $config) {
 			$config['name'] = $name;
 			$child = new $this->childrenClass($config, $this->config);
 			$output = $child->run($options);
 			if ($output) {
+				$hasOutput = true;
 				$class = array_pop(explode('\\', $this->childrenClass));
 				$result .= "Processing " .  $class . ' ' . $name . "\n";
 				$result .= $output;
@@ -106,7 +108,7 @@ abstract class Runnable implements iRunnable {
 			}
 		}
 
-		if ($this->sendEmail) {
+		if ($this->sendEmail && $hasOutput) {
 			$email = new Email($this->config);
 			$email->send($result);
 		}

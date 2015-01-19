@@ -8,9 +8,9 @@
 
 			"project.name": "test.qobo.biz",
 
-			"email.send": "false",
-			"email.to": "some@user",
-			"email.from": "some@user",
+			"email.send": "true",
+			"email.to": "l.mamchenkov@qobo.biz",
+			"email.from": "l.mamchenkov@qobo.biz",
 			"email.subject": "Deployment notification for %%project.name%%",
 			"email.body": "",
 
@@ -27,6 +27,8 @@
 		},
 
 		"commands": {
+			"empty": {"type":"command","command":"/usr/bin/true"},
+			"not-empty": {"type":"command","command":"echo hello"},
 			"install": { 
 				"type": "command", 
 				"command": "%%ssh.command%% '%%source.install%% && cd %%project.dir%% && %%source.checkout%%'" 
