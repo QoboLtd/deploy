@@ -8,9 +8,9 @@
 
 			"project.name": "test.qobo.biz",
 
-			"email.send": "true",
-			"email.to": "l.mamchenkov@qobo.biz",
-			"email.from": "l.mamchenkov@qobo.biz",
+			"email.send": "false",
+			"email.to": "some@user",
+			"email.from": "some@user",
 			"email.subject": "Deployment notification for %%project.name%%",
 			"email.body": "",
 
